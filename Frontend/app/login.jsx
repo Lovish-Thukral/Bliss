@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Phone } from 'lucide-react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import LoginImage from '../assets/images/loginPic.png';
 
 
@@ -8,7 +8,8 @@ export default function LoginScreen() {
   const router = useRouter();
 
   return (
-    <View className="flex-1 items-center justify-between bg-pink-50 py-12 px-6">
+    <View  className="flex-1 items-center justify-between bg-pink-50 px-6 pt-6 pb-52">
+
       <View className="items-center mt-5 h-[10vh] w-[70vw]">
         <Image
          source={require('../assets/images/applogo.webp')}
@@ -22,7 +23,7 @@ export default function LoginScreen() {
           source={LoginImage}
           className="w-full h-full rounded-lg"
           resizeMode="contain"
-        />
+          />
       </View>
 
       <View className="px-4 mt-4">
@@ -37,7 +38,7 @@ export default function LoginScreen() {
       <TouchableOpacity
         className="bg-pink-500 flex-row items-center justify-center px-6 py-3 rounded-full mt-6 shadow-lg"
         onPress={() => router.push('/login')}
-      >
+        >
         <Phone color="white" size={20} className="mr-2" />
         <Text className="text-white font-semibold text-base">Login with Phone</Text>
       </TouchableOpacity>
@@ -48,6 +49,6 @@ export default function LoginScreen() {
           <Text className="text-pink-500 font-semibold">Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </View>
+        </View>
   );
 }
