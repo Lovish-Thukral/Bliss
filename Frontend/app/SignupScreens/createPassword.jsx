@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import BackButton from '../../components/BackButton';
+import BackButton from '../../components/UIComponents/BackButton';
 
 const CreatePasswordScreen = () => {
     const router = useRouter()

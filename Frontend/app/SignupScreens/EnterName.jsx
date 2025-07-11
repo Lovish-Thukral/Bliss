@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native'
 import { useRouter } from 'expo-router'
-import BackButton from '../../components/BackButton.jsx';
+import BackButton from '../../components/UIComponents/BackButton';
 
 function EnterName() {
 

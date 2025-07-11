@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import Logo from "../components/Applogo.jsx";
+import Logo from "../components/UIComponents/Applogo.jsx";
 
 export default function Index() {
   return (
