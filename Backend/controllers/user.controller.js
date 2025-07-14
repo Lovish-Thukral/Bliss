@@ -27,12 +27,12 @@ export const signupUser = async (req, res) => {
 
         const { name, email, username, password, confirmPassword, mobile } = req.body;
         if (!name || !username || !password || !confirmPassword || (!email && !mobile)) {
-            return res.status(400).json({ message: "All fields are required" });
+            return res.status(200).json({ message: "All fields are required" });
         }
 
         const user = await Userdata.findOne({ username: username }).select('username');
         if (user) {
-            return res.status(500).json({ message: "User already existed" });
+            return res.status(200).json({ message: "User already existed" });
         }
 
         confirmPass(password, confirmPassword, res);
