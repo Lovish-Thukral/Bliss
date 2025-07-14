@@ -257,22 +257,21 @@ export const editUser = async (req, res) => {
 export const checkusername = async (req, res) => {
     const { username } = req.body;
     try {
-        const user = await Userdata.findOne({ username: username }).select('username')
+        const user = await Userdata.findOne({ username: username }).select('username');
         if (!user) {
-             return res.status(200).josn({
+            return res.status(200).json({
                 status: false
             });
-            
         } else {
             return res.status(200).json({
                 status: true
-            })
+            });
         }
-
     } catch (error) {
-
-        if (error) {
-            res.status(500).json({ message: 'server error occured', status: 'server issue please try again letter', error : error })
-        }
+        return res.status(500).json({
+            message: 'Server error occurred',
+            status: 'Server issue, please try again later',
+            error: error.message
+        });
     }
-}
+};
