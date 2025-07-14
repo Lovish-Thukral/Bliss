@@ -95,7 +95,7 @@ export const loginUser = async (req, res) => {
 
 
 export const findUser = async (req, res) => {
-    const { username } = req.body || {};
+    const { username } = req.query || {};
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
