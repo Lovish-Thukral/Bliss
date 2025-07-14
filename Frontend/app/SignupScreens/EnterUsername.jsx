@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
+import { useSelector } from 'react-redux';
 
 
 const EnterName = () => {
+  const autoname = useSelector((state) => state.signupdetails.email.split('@')[0])
   const [isUsable, setIsUsable] = useState(false);
-  const [input, setinput] = useState('');
+  const [input, setinput] = useState(autoname);
   const [hidden, setHidden] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
@@ -34,11 +36,11 @@ const EnterName = () => {
   useEffect(() => {
     const fetchData = async () => { 
       try {
-        const isAvailable = await axios.get('http://localhost:8000/api/user/checkusername', {
-          params: {
+        const isAvailable = await axios.get('https://bliss-3ucs.onrender.com/api/user/checkusername', 
+          {
             username: input
           }
-        });
+        );
         console.log(isAvailable.status);
         setIsUsable(isAvailable.status === 200); 
       } catch (error) {

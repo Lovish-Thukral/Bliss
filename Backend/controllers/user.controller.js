@@ -255,23 +255,24 @@ export const editUser = async (req, res) => {
 
 
 export const checkusername = async (req, res) => {
-    console.log("RUNNING...")
     const { username } = req.body;
     try {
         const user = await Userdata.findOne({ username: username }).select('username')
-        if (user) {
+        if (!user) {
+             return res.status(200).josn({
+                status: false
+            });
+            
+        } else {
             return res.status(200).json({
                 status: true
             })
-        } else {
-            return res.status(200).josn({
-                status: false
-            });
         }
+
     } catch (error) {
 
         if (error) {
-            res.status(500).json({ message: 'server error occured', status: 'server issue please try again letter' })
+            res.status(500).json({ message: 'server error occured', status: 'server issue please try again letter', error : error })
         }
     }
 }
