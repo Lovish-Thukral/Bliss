@@ -50,7 +50,7 @@ export const signupUser = async (req, res) => {
         })
 
 
-        const savedUser = await newuser.save().select('username');
+        const savedUser = await newuser.save()
         res.status(200).json({ message: "User created successfully", user: savedUser });
     } catch (error) {
         console.log(error)
