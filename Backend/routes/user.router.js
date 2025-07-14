@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findUser, signupUser, loginUser, deleteUser, logoutuser, editUser } from '../controllers/user.controller.js';
+import { findUser, signupUser, loginUser, deleteUser, logoutuser, editUser, checkusername } from '../controllers/user.controller.js';
 import middleauth from "../middleware/middle_auth.js";
 import protectedLogin from "../middleware/protectedLogin.js";
 
@@ -13,6 +13,7 @@ router.put('/edit/:editToMake', middleauth, editUser);
 router.get('/getuser', middleauth ,findUser);
 router.delete('/delete', middleauth, deleteUser);
 router.post('/logout', middleauth, logoutuser);
+router.get("/checkusername", checkusername );
 
 
 

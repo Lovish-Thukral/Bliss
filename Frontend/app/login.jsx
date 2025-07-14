@@ -9,7 +9,6 @@ export default function LoginScreen() {
 
   return (
     <View  className="flex-1 items-center justify-between bg-pink-50 px-6 pt-6 pb-52">
-
       <View className="items-center mt-5 h-[10vh] w-[70vw]">
         <Image
          source={require('../assets/images/applogo.webp')}

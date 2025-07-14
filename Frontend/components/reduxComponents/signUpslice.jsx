@@ -5,7 +5,7 @@ const signupSlice = createSlice({
     name: "signupdetailsreducer",
     initialState: {
         Phone : null,
-        Email : null,
+        email : null,
         password : null,
         name : null,
         username : null 
@@ -15,7 +15,7 @@ const signupSlice = createSlice({
             state.Phone = action.payload
         },
         addEmail : (state, action) =>{
-            state.Email =  action.payload
+            state.email =  action.payload
         },
         addpass : (state, action) =>{
             state.password =  action.payload

@@ -216,7 +216,7 @@ export const logoutuser = async (req, res) => {
 export const editUser = async (req, res) => {
 
     const params = req.params.editToMake;
-    const requestededit  = req.body || {};
+    const requestededit = req.body || {};
     const currentUser = req.user;
 
     try {
@@ -250,5 +250,28 @@ export const editUser = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: "server error", error: err.message });
+    }
+}
+
+
+export const checkusername = async (req, res) => {
+    console.log("RUNNING...")
+    const { username } = req.body;
+    try {
+        const user = await Userdata.findOne({ username: username }).select('username')
+        if (user) {
+            return res.status(200).json({
+                status: true
+            })
+        } else {
+            return res.status(200).josn({
+                status: false
+            });
+        }
+    } catch (error) {
+
+        if (error) {
+            res.status(500).json({ message: 'server error occured', status: 'server issue please try again letter' })
+        }
     }
 }

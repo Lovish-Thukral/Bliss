@@ -5,61 +5,93 @@ import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
 
 function EnterName() {
+  const [emailVal, setemailVal] = useState('');
+  const [Hide, setHide] = useState(false);
 
-  const [emailVal, setemailVal] = useState('')
-  const [Hide, setHide] = useState('')
+  const fallbackEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const checkFun = async (email) => {
-    try {
-      const res = await axios.get(`https://www.disify.com/api/email/${email}`);
-      if (res.data.format == false) {
-        setHide(true);
-        Vibration.vibrate(50)
-        return false
-      }
-      res.data.format ? true : false
+  const validmail = async (email) => {
+    const valid = fallbackEmailRegex.test(email);
+    setHide(!valid);
+    if (!valid) {
+      Vibration.vibrate(50);
+      return valid;
     }
-    catch (err) {
-      console.error('Disify error:', err.message);
-      return false;
-    }
+    return true;
+    
+    // else {
+    //   try {
+    //     const response = await fetch(
+    //       `hhttps://www.disify.com/api/email/${email}`,
+    //       {
+    //         method: 'GET',
+    //         headers: {
+    //           'Accept': 'application/json',
+    //           'User-Agent': 'Mozilla/5.0', // Optional spoof
+    //         },
+    //       }
+    //     );
 
-  };
+    //     if (!response.ok) {
+    //       throw new Error(`HTTP error! Status: ${response.status}`);
+    //     }
 
-  return (
+    //     const data = await response.json();
 
-    <View className="bg-pink-50 flex-1 items-center pt-10 relative">
-      <BackButton />
-      <Text className="text-2xl font-bold text-center text-gray-900">
-        Email Address
-      </Text>
-      <Text className="text-sm text-center text-gray-600 mt-2 mx-16">
-        We'll Need your email to stay in touch
-      </Text>
+    //     if (!data.format) {
+    //       setHide(true);
+    //       Vibration.vibrate(50);
+    //       return false;
+    //     }
 
-      <TextInput
-        className="bg-white p-2 px-3 w-[325px] h-[56px] rounded-3xl m-2"
-        placeholder='Enter Your Name'
-        keyboardType='email-address'
-        value={emailVal}
-        onChange={setemailVal}>
+    //     setHide(false);
+    //     return true;
+    //   } catch (err) {
+    //     console.error('Fetch error (Disify):', err.message);
+    //   } }
+    }; 
 
-      </TextInput>
-      <Text className={`text-red-500 font-semibold text-xs mb-6 text-center ${Hide ? '' : 'hidden'}`}> * Please Enter a Valid Email</Text>
+    const checkFun = async () => {
+      return await validmail(emailVal);
+    };
 
-      <Continuebtn
-        nextpage='/SignupScreens/createPassword'
-        checkFun={checkFun}
-        patchtype="email"
-        patchvalue={emailVal}
-      />
-      <Image
-        source={require('../../assets/images/arc2.png')}
-        className="w-[95vw] h-max absolute bottom-0 "
-        resizeMethod='contain'>
-      </Image>
-    </View>
-  )
-}
+    return (
+      <View className="bg-pink-50 flex-1 items-center pt-10 relative">
+        <BackButton />
+        <Text className="text-2xl font-bold text-center text-gray-900">Email Address</Text>
+        <Text className="text-sm text-center text-gray-600 mt-2 mx-16">
+          We'll Need your email to stay in touch
+        </Text>
+          <View className="self-center items-center w-[80vw]">
 
-export default EnterName
+        <TextInput
+          className="bg-white px-7 w-[325px] h-[56px] rounded-3xl m-2"
+          placeholder="Enter Your Email"
+          keyboardType="email-address"
+          value={emailVal}
+          onChangeText={setemailVal}
+          autoCapitalize="none"
+          />
+
+        <Text className={`text-red-500 font-semibold text-xs mb-6 text-center ${Hide ? '' : 'hidden'}`}>
+          * Please Enter a Valid Email
+        </Text>
+
+        <Continuebtn
+          nextpage="/SignupScreens/EnterName"
+          checkFun={checkFun}
+          patchtype="email"
+          patchvalue={emailVal}
+          />
+
+          </View>
+        <Image
+          source={require('../../assets/images/arc2.png')}
+          className="w-[95vw] h-max absolute bottom-0"
+          resizeMethod="contain"
+        />
+      </View>
+    );
+  }
+
+  export default EnterName;

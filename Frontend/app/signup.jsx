@@ -29,8 +29,10 @@ return (
     <Text className="text-sm text-center text-gray-600 mt-2 mx-16">
       We'll need your phone number to send an OTP for verification.
     </Text>
+    <View className="self-center items-center w-[80vw]">
+
     <TextInput
-      className="bg-white p-2 px-3 w-[325px] h-[56px] rounded-3xl m-2"
+      className="bg-white p-2 px-7 w-[325px] h-[56px] rounded-3xl m-2"
       placeholder='Enter Your Number'
       keyboardType='numeric'
       value={phoneVal}
@@ -38,7 +40,7 @@ return (
 
     </TextInput>
     <Text className={`text-red-500 font-semibold text-xs mb-6 text-center ${setHide ? '' : 'hidden'}`}> * Please Enter a Valid Mobile Number</Text>
-    <Text className="text-sm text-center text-gray-600 mx-16">
+    <Text className="text-sm text-center text-gray-600">
       You may receive WhatsApp Notification from us for security and login purposes.
     </Text>
 
@@ -49,6 +51,7 @@ return (
       patchvalue= {phoneVal}
       />
 
+      </View>
     <Image
       source={require('../assets/images/arc.png')}
       className="w-[95vw] h-max absolute bottom-0 "
