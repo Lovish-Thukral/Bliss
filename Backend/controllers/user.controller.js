@@ -59,39 +59,55 @@ export const signupUser = async (req, res) => {
 }
 
 
-
 export const loginUser = async (req, res) => {
-    const { username, password, mobile, email } = req.body;
-    if ((!username && !mobile && !email) || !password) {
-        return res.status(400).json({ message: "At least one of username, mobile, or email and the password are required" });
-    }
+  const { username, password, mobile, email } = req.body;
 
-    let user = await Userdata.findOne({ username: username });
+  if ((!username && !mobile && !email) || !password) {
+    return res.status(400).json({ message: "Fields Required" });
+  }
 
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
+  let key, data;
+  if (username) {
+    key = "username";
+    data = username;
+  } else if (mobile) {
+    key = "mobile";
+    data = mobile;
+  } else if (email) {
+    key = "email";
+    data = email;
+  }
 
-    const decryption = decryptpass(password, user.password, res);
+  let user = await Userdata.findOne({ [key]: data });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-    if (decryption) {
+  const isValidPassword = decryptpass(password, user.password);
+  if (!isValidPassword) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
 
-        user = await Userdata.findByIdAndUpdate(
-            user._id,
-            { loginstatus: true },
-            { new: true }
-        ).select('-password -__v -mobile -email');
+  // Update login status
+  user = await Userdata.findByIdAndUpdate(
+    user._id,
+    { loginstatus: true },
+    { new: true }
+  ).select('-password -__v -mobile -email');
 
-        if (!user) {
-            return res.status(500).json({ message: "Error logging in user" });
-        }
+  if (!user) {
+    return res.status(500).json({ message: "Error logging in user" });
+  }
 
-    }
+  const token = CreateToken({ id: user._id, loginstatus: true });
 
-    CreateToken({ userid: user._id, loginstatus: true }, res)
+  return res.status(200).json({
+    message: "Logged Successfully",
+    token,
+    user
+  });
+};
 
-    return res.status(200).json({ message: "User logged in successfully", user: user });
-}
 
 
 export const findUser = async (req, res) => {

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Phone } from 'lucide-react-native';
+import { LogIn } from 'lucide-react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import LoginImage from '../assets/images/loginPic.png';
 
@@ -36,10 +36,10 @@ export default function LoginScreen() {
 
       <TouchableOpacity
         className="bg-pink-500 flex-row items-center justify-center px-6 py-3 rounded-full mt-6 shadow-lg"
-        onPress={() => router.push('/login')}
+        onPress={() => router.push('/loginPage')}
         >
-        <Phone color="white" size={20} className="mr-2" />
-        <Text className="text-white font-semibold text-base">Login with Phone</Text>
+        <LogIn color="white" size={20} className="mr-2" />
+        <Text className="text-white font-semibold text-base">Login to Continue</Text>
       </TouchableOpacity>
 
       <View className="mt-4 flex-row">

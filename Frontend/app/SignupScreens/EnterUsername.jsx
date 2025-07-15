@@ -2,9 +2,9 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
-import { useSelector } from 'react-redux';
 
 
 const EnterName = () => {
@@ -34,15 +34,17 @@ const EnterName = () => {
   };
 
   useEffect(() => {
+    let res = {};
     const fetchData = async () => { 
       try {
-        const isAvailable = await axios.get('https://bliss-3ucs.onrender.com/api/user/checkusername', 
-          {
-            username: input
-          }
-        );
-        console.log(isAvailable.status);
-        setIsUsable(isAvailable.status === 200); 
+        const isAvailable = await axios.post('https://bliss-3ucs.onrender.com/api/user/checkusername', {
+            username: input.toLowerCase()
+        }
+        ).then((reponse) => {
+           res = {...reponse.data}
+        });
+        res.status == false ? setIsUsable(true) : setIsUsable(false)
+
       } catch (error) {
         console.error("Error checking username availability:", error);
         setIsUsable(false);
@@ -83,10 +85,10 @@ const EnterName = () => {
         {isUsable === true && input.length > 3 && <Text className="text-green-500 font-semibold text-sm mb-6"> Username is available! </Text>}
         {isUsable === false && input.length > 3 && <Text className="text-red-500 font-semibold text-sm mb-6"> Username is not available. </Text>}
         <Continuebtn
-          nextpage={'SignupScreens/EnterUsername'}
+          nextpage={'SignupScreens/CreatePassword'}
           checkFun={checkFun}
           patchtype="username"
-          patchvalue={input}
+          patchvalue={input.toLowerCase()}
           isdisabled={disabled} 
         />
 

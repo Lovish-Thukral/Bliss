@@ -1,24 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
-import { Eye, EyeOff } from 'lucide-react-native';
+"use client";
+import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { Eye, EyeOff } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import BackButton from '../../components/UIComponents/BackButton';
 
-const CreatePasswordScreen = () => {
-    const router = useRouter()
+const fetchApi = async (data) => {
+    try {
+        const res = await axios.post('https://bliss-3ucs.onrender.com/api/user/signup', data);
+        return { data: res.data, status: res.status };
+    } catch (err) {
+        return { data: { message: "Something went wrong" }, status: 500 };
+    }
+};
+
+const CreatePassword = () => {
+    const router = useRouter();
+    const RegisterationData = useSelector((state) => state.signupdetails);
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [toggle, maketoggle] = useState(false);
 
     const isValid = password.length >= 8 && password === confirmPassword;
+
+    useEffect(() => {
+        if (toggle) {
+            const registerUser = async () => {
+                setLoading(true);
+                const dataToSend = { ...RegisterationData, password, confirmPassword };
+                const response = await fetchApi(dataToSend);
+                console.log(response.data)
+                setLoading(false);
+
+                if (response.data.message === "User created successfully") {
+                    console.log('created')
+                    router.push('login');
+                } else if (response.data.message === "User already existed") {
+                    router.replace("/SignupScreens/EnterName");
+                } else if (response.data.message === "All fields are required") {
+                    router.replace("/signup");
+                }
+            };
+            registerUser();
+        }
+    }, [toggle]);
 
     return (
         <SafeAreaView className="flex-1 bg-pink-50 items-center pt-10">
             <BackButton />
-
-            <View >
+            <View>
                 <Text className="text-2xl font-bold text-gray-800">Create a Strong Password</Text>
                 <Text className="text-sm text-gray-500 mt-2">Make it tough — so only you can unlock your world.</Text>
 
@@ -55,20 +91,23 @@ const CreatePasswordScreen = () => {
                 </View>
 
                 <Text className="text-xs text-gray-400 mt-2 ml-2">
-                    Use at least 6 characters. Mix letters, numbers & symbols.
+                    Use at least 8 characters. Mix letters, numbers & symbols.
                 </Text>
-                
+
                 <TouchableOpacity
                     disabled={!isValid}
-                    onPress={() => router.push('/homepage')}
-                    className={`mt-6 py-3 rounded-full items-center ${isValid ? 'bg-pink-500' : 'bg-pink-300'
-                        }`}
+                    onPress={() => maketoggle(true)}
+                    className={`mt-6 py-3 rounded-full items-center ${isValid ? 'bg-pink-500' : 'bg-pink-300'}`}
                 >
-                    <Text className="text-white font-semibold text-base">Continue</Text>
+                    {loading ? (
+                        <ActivityIndicator color="white" />
+                    ) : (
+                        <Text className="text-white font-semibold text-base w-[100%] text-center">Continue</Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
 };
 
-export default CreatePasswordScreen;
+export default CreatePassword;
