@@ -9,7 +9,7 @@ const middleauth = async (req, res, next) => {
       return res.status(401).json({ message: 'Please login first', status: 'no token provided' });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+    const token = authHeader.split(' ')[1]; 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
     if (!decoded) {

@@ -18,7 +18,7 @@ export default function RootLayout() {
 
   React.useEffect(() => {
     if (isloaded) {
-      router.replace("/login");
+      router.replace("/homepage");
     }
   }, [isloaded, router]);
 

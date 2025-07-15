@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
 
 function EnterName() {
 
-  const autoname = useSelector((state) => state.signupdetails.email)
-  const [input, setinput] = useState(autoname.split('@')[0])
+  const [input, setinput] = useState('')
   const [hidden, setHidden] = useState(false)
-  const checkFun = () => {
-    if (input.trim() == "" || input.length <= 3) {
-      setHidden(true)
-      return false;
-    }
-    setHidden(false);
-    return true
+
+  const checkFun = (value) => {
+  const trimmedInput = String(value).trim();
+  
+  if (trimmedInput === "" || trimmedInput.length < 4) {
+    setHidden(true);
+    return false;
   }
+
+  setHidden(false);
+  return true;
+};
 
   return (
     <View className="bg-pink-50 flex-1 items-center pt-10 relative">
@@ -33,7 +35,7 @@ function EnterName() {
           className="bg-white p-2 px-3 w-[325px] h-[56px] rounded-3xl m-2"
           placeholder='Enter Your Name'
           value={input}
-          onChange={setinput}>
+          onChangeText={setinput}>
         </TextInput>
 
         <Continuebtn

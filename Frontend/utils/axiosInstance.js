@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://bliss-3ucs.onrender.com',
+  baseURL: 'https://bliss-3ucs.onrender.com/api',
   timeout: 10000,
 });
 
@@ -10,7 +10,7 @@ axiosInstance.interceptors.request.use(
   async (config) => {
     const token = await AsyncStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // 🔥 Attach token
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

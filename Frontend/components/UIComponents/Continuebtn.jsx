@@ -11,27 +11,28 @@ function Continuebtn({ nextpage, checkFun, patchvalue, patchtype, isdisabled = f
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const onclickFun = async () => {
+    const onclickFun = async() => {
+        const tosendvalue = patchvalue;
         setLoading(true);
-        const val = await checkFun();
+        const val = await checkFun(patchvalue);
         setLoading(false);
-
+        
         if (val) {
             switch (patchtype) {
                 case 'phone':
-                    dispatch(addPhone(patchvalue));
+                    dispatch(addPhone(tosendvalue));
                     break;
                 case 'name':
-                    dispatch(addname(patchvalue));
+                    dispatch(addname(tosendvalue));
                     break;
                 case 'email':
-                    dispatch(addEmail(patchvalue));
+                    dispatch(addEmail(tosendvalue));
                     break;
                 case 'username':
-                    dispatch(addusername(patchvalue));
+                    dispatch(addusername(tosendvalue));
                     break;
                 case 'password':
-                    dispatch(addpass(patchvalue));
+                    dispatch(addpass(tosendvalue));
                     break;
                 default:
                     break;

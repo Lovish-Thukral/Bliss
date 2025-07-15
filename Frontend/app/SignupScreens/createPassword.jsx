@@ -34,6 +34,7 @@ const CreatePassword = () => {
             const registerUser = async () => {
                 setLoading(true);
                 const dataToSend = { ...RegisterationData, password, confirmPassword };
+                console.log(dataToSend)
                 const response = await fetchApi(dataToSend);
                 console.log(response.data)
                 setLoading(false);

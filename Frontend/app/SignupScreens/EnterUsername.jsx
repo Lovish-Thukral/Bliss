@@ -2,30 +2,20 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
 
-
 const EnterName = () => {
-  const autoname = useSelector((state) => state.signupdetails.email.split('@')[0])
   const [isUsable, setIsUsable] = useState(false);
-  const [input, setinput] = useState(autoname);
+  const [input, setInput] = useState('');
   const [hidden, setHidden] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
-  const makeEndable = () => {
-    if (isUsable) { 
-      setDisabled(true);
-      setHidden(true);
-    } else {
-      setDisabled(false);
-      setHidden(true);
-    }
-  };
-
   const checkFun = () => {
-    if (input.length <= 3) {
+    
+    const inn = input.trim();
+    const hasSpace = /\s/.test(inn);
+    if (inn.length < 5 || hasSpace) {
       setHidden(true);
       return false;
     }
@@ -34,17 +24,17 @@ const EnterName = () => {
   };
 
   useEffect(() => {
-    let res = {};
-    const fetchData = async () => { 
+    const fetchData = async () => {
+      const username = input.trim().toLowerCase();
+      if (username.length < 5 || /\s/.test(username)) {
+        setIsUsable(false);
+        return;
+      }
       try {
-        const isAvailable = await axios.post('https://bliss-3ucs.onrender.com/api/user/checkusername', {
-            username: input.toLowerCase()
-        }
-        ).then((reponse) => {
-           res = {...reponse.data}
+        const res = await axios.post('https://bliss-3ucs.onrender.com/api/user/checkusername', {
+          username,
         });
-        res.status == false ? setIsUsable(true) : setIsUsable(false)
-
+        setIsUsable(res?.data?.status === false);
       } catch (error) {
         console.error("Error checking username availability:", error);
         setIsUsable(false);
@@ -52,11 +42,10 @@ const EnterName = () => {
     };
 
     fetchData();
-    makeEndable();
-  }, [input]); 
+  }, [input]);
 
   useEffect(() => {
-    if (isUsable && input.length > 3) {
+    if (isUsable && input.length > 4) {
       setDisabled(false);
     } else {
       setDisabled(true);
@@ -73,26 +62,23 @@ const EnterName = () => {
         Time to pick a username that's as unique as you are!
       </Text>
       <View className="self-center items-center w-[80vw]">
-
         <TextInput
           className="bg-white p-2 px-3 w-[325px] h-[56px] rounded-3xl m-2"
-          placeholder='Enter Your Name'
+          placeholder="Enter Your Name"
           value={input}
-          onChangeText={setinput}
+          onChangeText={setInput}
         />
+        {hidden && <Text className="text-red-500 font-semibold text-xs mb-6"> Username must be 5+ characters, no spaces </Text>}
+        {isUsable && input.length > 4 && <Text className="text-green-500 font-semibold text-sm mb-6"> Username is available! </Text>}
+        {!isUsable && input.length > 4 && <Text className="text-red-500 font-semibold text-sm mb-6"> Username is not available. </Text>}
 
-        {hidden && input.length <= 3 && <Text className="text-red-500 font-semibold text-xs mb-6"> Username must be longer than 3 characters </Text>}
-        {isUsable === true && input.length > 3 && <Text className="text-green-500 font-semibold text-sm mb-6"> Username is available! </Text>}
-        {isUsable === false && input.length > 3 && <Text className="text-red-500 font-semibold text-sm mb-6"> Username is not available. </Text>}
         <Continuebtn
-          nextpage={'SignupScreens/CreatePassword'}
-          checkFun={checkFun}
+          nextpage="SignupScreens/CreatePassword"
+          checkFun={() => checkFun}
           patchtype="username"
           patchvalue={input.toLowerCase()}
-          isdisabled={disabled} 
+          isdisabled={disabled}
         />
-
-        
       </View>
     </View>
   );
