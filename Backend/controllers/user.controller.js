@@ -27,12 +27,12 @@ export const signupUser = async (req, res) => {
 
         const { name, email, username, password, confirmPassword, mobile } = req.body;
         if (!name || !username || !password || !confirmPassword || (!email && !mobile)) {
-            return res.status(400).json({ message: "All fields are required" });
+            return res.status(200).json({ message: "All fields are required" });
         }
 
         const user = await Userdata.findOne({ username: username }).select('username');
         if (user) {
-            return res.status(500).json({ message: "User already existed" });
+            return res.status(200).json({ message: "User already existed" });
         }
 
         confirmPass(password, confirmPassword, res);
@@ -50,8 +50,8 @@ export const signupUser = async (req, res) => {
         })
 
 
-        const savedUser = await newuser.save();
-        res.status(201).json({ message: "User created successfully", user: savedUser });
+        const savedUser = await newuser.save()
+        res.status(200).json({ message: "User created successfully", user: savedUser });
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: "Error creating user", error: error });
@@ -111,7 +111,7 @@ export const loginUser = async (req, res) => {
 
 
 export const findUser = async (req, res) => {
-    const { username } = req.body || {};
+    const { username } = req.query || {};
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
@@ -273,22 +273,21 @@ export const editUser = async (req, res) => {
 export const checkusername = async (req, res) => {
     const { username } = req.body;
     try {
-        const user = await Userdata.findOne({ username: username }).select('username')
+        const user = await Userdata.findOne({ username: username }).select('username');
         if (!user) {
-             return res.status(200).josn({
+            return res.status(200).json({
                 status: false
             });
-            
         } else {
             return res.status(200).json({
                 status: true
-            })
+            });
         }
-
     } catch (error) {
-
-        if (error) {
-            res.status(500).json({ message: 'server error occured', status: 'server issue please try again letter', error : error })
-        }
+        return res.status(500).json({
+            message: 'Server error occurred',
+            status: 'Server issue, please try again later',
+            error: error.message
+        });
     }
-}
+};

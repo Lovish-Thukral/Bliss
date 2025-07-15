@@ -13,7 +13,7 @@ router.put('/edit/:editToMake', middleauth, editUser);
 router.get('/getuser', middleauth ,findUser);
 router.delete('/delete', middleauth, deleteUser);
 router.post('/logout', middleauth, logoutuser);
-router.get("/checkusername", checkusername );
+router.post("/checkusername", checkusername );
 
 
 
