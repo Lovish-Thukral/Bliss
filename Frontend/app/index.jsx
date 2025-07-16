@@ -1,30 +1,33 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import Logo from "../components/UIComponents/Applogo.jsx";
-import axiosInstance from '../utils/axiosInstance.js';
-import { useDispatch, useSelector } from "react-redux";
+import UserDataUpdate from "../config/UserDataUpdate.js"
+import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
 import { updateData } from "@/components/reduxComponents/UserDataSlice.jsx";
 
 
 
-const verifyToken = async () => {
-  try {
-    const res = await axiosInstance.post('/user/TokenVerify')
-    const { user } = res.data
-    console.log(user)
-    return user
 
-  } catch (error) {
-    console.log(error)
-  }
-}
 
 export default function Index() {
 
 
+  const router = useRouter()
+  const dispatch = useDispatch()
+
+
   useEffect(() => {
     (async () => {
-      const data = await verifyToken();
+      const data = await UserDataUpdate();
+      if (!data) {
+        alert("Session Expired")
+        router.replace('./login')
+        return
+      }
+
+      dispatch(updateData(data))
+      router.replace('./homepage')
     })();
   }, []);
 

@@ -14,12 +14,17 @@ const UserDataSlice = createSlice({
     },
     reducers: {
        updateData : (state, action) => {
-        state  = {
-            ...action.payload
-        }
+        console.log('updating')
+        console.log(action)
+        state.bio = action.payload.bio
+        state.name = action.payload.name
+        state.username = action.payload.username
+        state.followers = action.payload.followers
+        state.following = action.payload.following
+        state.posts = action.payload.posts
+        state.profilepic = action.payload.profilepic
        }
 }
-
 });
 
 export  const {updateData} = UserDataSlice.actions;
