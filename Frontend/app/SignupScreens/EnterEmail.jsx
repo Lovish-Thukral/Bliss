@@ -18,37 +18,6 @@ function EnterName() {
       return valid;
     }
     return true;
-    
-    // else {
-    //   try {
-    //     const response = await fetch(
-    //       `hhttps://www.disify.com/api/email/${email}`,
-    //       {
-    //         method: 'GET',
-    //         headers: {
-    //           'Accept': 'application/json',
-    //           'User-Agent': 'Mozilla/5.0', // Optional spoof
-    //         },
-    //       }
-    //     );
-
-    //     if (!response.ok) {
-    //       throw new Error(`HTTP error! Status: ${response.status}`);
-    //     }
-
-    //     const data = await response.json();
-
-    //     if (!data.format) {
-    //       setHide(true);
-    //       Vibration.vibrate(50);
-    //       return false;
-    //     }
-
-    //     setHide(false);
-    //     return true;
-    //   } catch (err) {
-    //     console.error('Fetch error (Disify):', err.message);
-    //   } }
     }; 
 
     const checkFun = async () => {

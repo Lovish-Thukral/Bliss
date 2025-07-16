@@ -2,20 +2,31 @@ import React, { useEffect } from "react";
 import { View } from "react-native";
 import Logo from "../components/UIComponents/Applogo.jsx";
 import axiosInstance from '../utils/axiosInstance.js';
+import { useDispatch, useSelector } from "react-redux";
+import { updateData } from "@/components/reduxComponents/UserDataSlice.jsx";
+
 
 
 const verifyToken = async () => {
-   const res = await axiosInstance.post('/user/TokenAuthController')
+  try {
+    const res = await axiosInstance.post('/user/TokenVerify')
     const { user } = res.data
     console.log(user)
+    return user
+
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export default function Index() {
 
 
-  useEffect(
-    verifyToken
-  , [])
+  useEffect(() => {
+    (async () => {
+      const data = await verifyToken();
+    })();
+  }, []);
 
   return (
 
