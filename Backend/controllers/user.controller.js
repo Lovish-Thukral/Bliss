@@ -182,41 +182,22 @@ export const deleteUser = async (req, res) => {
 
 export const logoutuser = async (req, res) => {
 
-    const { username, password, confirmPassword, confirmation } = req.body;
     const currentUser = req.user;
-
-    if (!confirmation || !['Yes', 'yes', 'confirm', 'Confirm'].includes(confirmation)) {
-        return res.status(400).json({ message: "Please confirm your operation first" });
-    }
-
-    if (currentUser.username !== username) {
-        return res.status(404).json({ message: "User ID didn't match, please check username", status: "operation failed" });
-    }
-
-    confirmPass(password, confirmPassword, res);
-
-    const check = await Userdata.findById(currentUser._id).select('password _id');
-    console.log(check)
+    const check = await Userdata.findById(currentUser._id).select('_id');
 
     if (!check) {
         console.log(check)
         return res.status(404).json({ message: "User not found" });
     }
 
-    decryptpass(password, check.password, res)
-
-    try {
+      try {
         const logoutconfir = await Userdata.findByIdAndUpdate(
             check._id,
             { loginstatus: false },
             { new: true }
         );
 
-        const cookieremoval = res.cookie("loginauth", "", {
-            maxAge: 0
-        })
-
-        if (logoutconfir && cookieremoval) {
+        if (logoutconfir) {
             return res.status(200).json({ message: "logout successful" });
         } else {
             return res.status(500).json({ message: "server error" });
