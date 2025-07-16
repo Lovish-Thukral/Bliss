@@ -38,21 +38,23 @@ const LoginPage = () => {
             } else {
                 key = "username"
             }
-        
+
             const res = await axiosInstance.post('/user/login', {
                 [key]: identifier,
                 password,
             });
 
-            const { token, user, message } = res.data;
+            const { token, message } = res.data;
 
-            await AsyncStorage.setItem('token', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            if (message === "Logged Successfully") {
+                await AsyncStorage.setItem('token', token);
+                router.replace('/homepage');
+            }
 
-            router.replace('/homepage');
         } catch (err) {
             console.error('Login error:', err);
             alert(err?.response?.data?.message || 'Login failed. Try again.');
+            
         } finally {
             setLoading(false);
         }

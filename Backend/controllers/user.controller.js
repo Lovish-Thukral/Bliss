@@ -90,7 +90,6 @@ export const loginUser = async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  // Update login status
   user = await Userdata.findByIdAndUpdate(
     user._id,
     { loginstatus: true },
@@ -105,8 +104,7 @@ export const loginUser = async (req, res) => {
 
   return res.status(200).json({
     message: "Logged Successfully",
-    token,
-    user
+    token
   });
 };
 
@@ -293,3 +291,13 @@ export const checkusername = async (req, res) => {
         });
     }
 };
+
+
+export const TokenAuthController = async (req, res) => {
+    const curruntUserdata = req.user
+    return res.status(200).json({
+        user : {
+            ...curruntUserdata
+        }
+    })
+}

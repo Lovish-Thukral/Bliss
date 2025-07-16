@@ -5,22 +5,22 @@ import storage from '../config/reduxConfig.js'
 import "./global.css";
 
 export default function RootLayout() {
-  const router = useRouter();
-  const [isloaded, setIsLoaded] = useState(false);
+  // const router = useRouter();
+  // const [isloaded, setIsLoaded] = useState(false);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 1000);
+  // React.useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoaded(true);
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  React.useEffect(() => {
-    if (isloaded) {
-      router.replace("/homepage");
-    }
-  }, [isloaded, router]);
+  // React.useEffect(() => {
+  //   if (isloaded) {
+  //     router.replace("/homepage");
+  //   }
+  // }, [isloaded, router]);
 
   return (
     <Provider store={storage} >
