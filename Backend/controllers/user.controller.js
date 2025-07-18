@@ -79,11 +79,11 @@ export const loginUser = async (req, res) => {
     }
 
 
-    console.log(key, data)
-    let user = await Userdata.findOne({ [key]: data });
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
+  console.log(key, data)
+  let user = await Userdata.findOne({ [key]: data });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
     const isValidPassword = decryptpass(password, user.password);
     if (!isValidPassword) {
