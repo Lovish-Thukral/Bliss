@@ -115,7 +115,7 @@ export const findUser = async (req, res) => {
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
-        return res.status(200).json({ users: userlist });
+        return res.status(200).json({ users: userlist, message : 'no body found' });
     }
 
     const user = await Userdata.find({
