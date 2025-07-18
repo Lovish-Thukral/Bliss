@@ -11,7 +11,7 @@ router.post('/signup', protectedLogin, signupUser);
 router.post('/login', protectedLogin, loginUser); 
 router.put('/edit/:editToMake', middleauth, editUser);
 router.get('/listuser', middleauth ,findUser);
-router.get('/userprofile', openProfile);
+router.get('/userprofile/:params', openProfile);
 router.delete('/delete', middleauth, deleteUser);
 router.post('/logout', middleauth, logoutuser);
 router.post("/checkusername", checkusername );
