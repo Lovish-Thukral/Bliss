@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findUser, signupUser, loginUser, deleteUser, logoutuser, editUser, checkusername, TokenAuthController } from '../controllers/user.controller.js';
+import { findUser, signupUser, loginUser, deleteUser, logoutuser, editUser, checkusername, TokenAuthController, openProfile } from '../controllers/user.controller.js';
 import middleauth from "../middleware/middle_auth.js";
 import protectedLogin from "../middleware/protectedLogin.js";
 
@@ -10,7 +10,8 @@ const router = Router();
 router.post('/signup', protectedLogin, signupUser);
 router.post('/login', protectedLogin, loginUser); 
 router.put('/edit/:editToMake', middleauth, editUser);
-router.get('/getuser', middleauth ,findUser);
+router.get('/listuser', middleauth ,findUser);
+router.get('/userprofile', openProfile);
 router.delete('/delete', middleauth, deleteUser);
 router.post('/logout', middleauth, logoutuser);
 router.post("/checkusername", checkusername );

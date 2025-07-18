@@ -60,90 +60,99 @@ export const signupUser = async (req, res) => {
 
 
 export const loginUser = async (req, res) => {
-  const { username, password, mobile, email } = req.body;
+    const { username, password, mobile, email } = req.body;
 
-  if ((!username && !mobile && !email) || !password) {
-    return res.status(400).json({ message: "Fields Required" });
-  }
+    if ((!username && !mobile && !email) || !password) {
+        return res.status(400).json({ message: "Fields Required" });
+    }
 
-  let key, data;
-  if (username) {
-    key = "username";
-    data = username;
-  } else if (mobile) {
-    key = "mobile";
-    data = mobile;
-  } else if (email) {
-    key = "email";
-    data = email;
-  }
+    let key, data;
+    if (username) {
+        key = "username";
+        data = username;
+    } else if (mobile) {
+        key = "mobile";
+        data = mobile;
+    } else if (email) {
+        key = "email";
+        data = email;
+    }
 
 
-  console.log(key, data)
-  let user = await Userdata.findOne({ [key]: data });
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+    console.log(key, data)
+    let user = await Userdata.findOne({ [key]: data });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
 
-  const isValidPassword = decryptpass(password, user.password);
-  if (!isValidPassword) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
+    const isValidPassword = decryptpass(password, user.password);
+    if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-  user = await Userdata.findByIdAndUpdate(
-    user._id,
-    { loginstatus: true },
-    { new: true }
-  ).select('-password -__v -mobile -email');
+    user = await Userdata.findByIdAndUpdate(
+        user._id,
+        { loginstatus: true },
+        { new: true }
+    ).select('-password -__v -mobile -email');
 
-  if (!user) {
-    return res.status(500).json({ message: "Error logging in user" });
-  }
+    if (!user) {
+        return res.status(500).json({ message: "Error logging in user" });
+    }
 
-  const token = CreateToken({ id: user._id, loginstatus: true });
+    const token = CreateToken({ id: user._id, loginstatus: true });
 
-  return res.status(200).json({
-    message: "Logged Successfully",
-    token
-  });
+    return res.status(200).json({
+        message: "Logged Successfully",
+        token
+    });
 };
 
 
 
 export const findUser = async (req, res) => {
-    const { username } = req.query || {};
+    const { username } = req.body || {};
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
-        return res.status(200).json({ message: "Caution ! No Input Found", users: userlist });
+        return res.status(200).json({ users: userlist });
     }
 
-    const user = await Userdata.findOne({ username: username }).select('username followers following bio profilepic posts');
+    const user = await Userdata.find({
+        $or: [
+            { username: { $regex: username} },
+            { name: { $regex: username, $options: 'i' } }
+        ]}).select('username name profilepic');
+    
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
 
-    const workinguser = req.user;
-    const followsyou = user.followers.includes(workinguser.username);
-    const followedbyyou = workinguser.following.includes(user.username);
-
     return res.status(200).json({
-        message: "User found successfully",
-        user: {
-            username: user.username,
-            followers: user.followers.length,
-            following: user.following.length,
-            bio: user.bio,
-            profilepic: user.profilepic,
-            posts: user.posts,
-            followsyou: `${followsyou ? "follows you" : "does not follow you"}`,
-            followedbyyou: `${followedbyyou ? "following" : "not following"}`,
-            message: "go to edit api for changing follow and unfollow"
+        userlist : user
         }
-    });
+    );
 
 }
 
+export const openProfile = async (req, res) => {
+    const { username } = req.query || {};
+    if (!username) {
+        return res.status(404).json({ message : 'User Not Found' });
+    }
+
+    const user =  await Userdata.findOne({ username: username }).select('username followers following bio profilepic posts name');
+    
+    if (!user) {
+        return res.status(200).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+        ...user
+        }
+    );
+
+}
 
 
 export const deleteUser = async (req, res) => {
@@ -190,7 +199,7 @@ export const logoutuser = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
     }
 
-      try {
+    try {
         const logoutconfir = await Userdata.findByIdAndUpdate(
             check._id,
             { loginstatus: false },
@@ -277,7 +286,7 @@ export const checkusername = async (req, res) => {
 export const TokenAuthController = async (req, res) => {
     const curruntUserdata = req.user
     return res.status(200).json({
-        user : {
+        user: {
             ...curruntUserdata
         }
     })
