@@ -40,15 +40,16 @@ const LoginPage = () => {
             }
 
             const res = await axiosInstance.post('/user/login', {
-                [key]: identifier,
+                [key]: identifier.toLowerCase(),
                 password,
             });
 
             const { token, message } = res.data;
 
             if (message === "Logged Successfully") {
-                await AsyncStorage.setItem('token', token);
-                router.replace('/homepage');
+              const checkSave =   await AsyncStorage.setItem('token', token);
+               checkSave ?  console.log('saved') : console.log("errr saving")
+                router.replace('/');
             }
 
         } catch (err) {

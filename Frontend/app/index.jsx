@@ -19,7 +19,9 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
+     try {
       const data = await UserDataUpdate();
+      console.log(data)
       if (!data) {
         alert("Session Expired")
         router.replace('./login')
@@ -28,6 +30,11 @@ export default function Index() {
 
       dispatch(updateData(data))
       router.replace('./homepage')
+     } catch (error) {
+      console.log(error),
+      router.replace('login')
+     }
+      
     })();
   }, []);
 

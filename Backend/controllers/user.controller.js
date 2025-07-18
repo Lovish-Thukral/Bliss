@@ -195,7 +195,6 @@ export const logoutuser = async (req, res) => {
     const check = await Userdata.findById(currentUser._id).select('_id');
 
     if (!check) {
-        console.log(check)
         return res.status(404).json({ message: "User not found" });
     }
 

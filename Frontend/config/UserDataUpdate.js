@@ -1,5 +1,4 @@
 import axiosInstance from '../utils/axiosInstance.js';
-import { updateData } from "@/components/reduxComponents/UserDataSlice.jsx";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -12,7 +11,9 @@ const verifyToken = async () => {
         }
         return user
     } catch (error) {
-        if(err) {
+        if(error) {
+            
+            console.log(error)
             return false
         }
     }
