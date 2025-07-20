@@ -78,10 +78,10 @@ export const loginUser = async (req, res) => {
         data = email;
     }
 
-  let user = await Userdata.findOne({ [key]: data });
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+    let user = await Userdata.findOne({ [key]: data });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
 
     const isValidPassword = decryptpass(password, user.password);
     if (!isValidPassword) {
@@ -113,44 +113,47 @@ export const findUser = async (req, res) => {
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
-        return res.status(200).json({ users: userlist, message : 'no body found' });
+        return res.status(200).json({ users: userlist, message: 'no body found' });
     }
 
     const user = await Userdata.find({
         $or: [
-            { username: { $regex: username} },
+            { username: { $regex: username } },
             { name: { $regex: username, $options: 'i' } }
-        ]}).select('username name profilepic');
-    
+        ]
+    }).select('username name profilepic');
+
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
 
     return res.status(200).json({
-        userlist : user
-        }
+        userlist: user
+    }
     );
 
 }
 
 export const openProfile = async (req, res) => {
-    const { username } = req.params || {};
+    const { username } = req.params; // ✅ direct access
+    console.log(username)
     if (!username) {
-        return res.status(200).json({ message : 'User Not Found its happening here' });
+
+        return res.status(404).json({ message: 'User not found — username missing', username });
     }
 
-    const user =  await Userdata.findOne({ username: username }).select('username followers following bio profilepic posts name');
-    
-    if (!user) {
-        return res.status(200).json({ message: "User not found" });
-    }
+    try {
+        const user = await Userdata.findOne({ username }).select('username followers following bio profilepic posts name');
 
-    return res.status(200).json({
-        ...user
+        if (!user) {
+            return res.status(404).json({ message: "User not found in DB" });
         }
-    );
 
-}
+        return res.status(200).json(user);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 
 export const deleteUser = async (req, res) => {
