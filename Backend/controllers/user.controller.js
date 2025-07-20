@@ -78,8 +78,6 @@ export const loginUser = async (req, res) => {
         data = email;
     }
 
-
-  console.log(key, data)
   let user = await Userdata.findOne({ [key]: data });
   if (!user) {
     return res.status(404).json({ message: "User not found" });
@@ -115,7 +113,7 @@ export const findUser = async (req, res) => {
     if (!username) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
-        return res.status(200).json({ users: userlist });
+        return res.status(200).json({ users: userlist, message : "no body found" });
     }
 
     const user = await Userdata.find({
@@ -138,7 +136,7 @@ export const findUser = async (req, res) => {
 export const openProfile = async (req, res) => {
     const { username } = req.query || {};
     if (!username) {
-        return res.status(404).json({ message : 'User Not Found' });
+        return res.status(200).json({ message : 'User Not Found its happening here' });
     }
 
     const user =  await Userdata.findOne({ username: username }).select('username followers following bio profilepic posts name');
