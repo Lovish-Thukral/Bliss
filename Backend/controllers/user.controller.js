@@ -134,7 +134,7 @@ export const findUser = async (req, res) => {
 }
 
 export const openProfile = async (req, res) => {
-    const { username } = req.params.params || {};
+    const { username } = req.params || {};
     if (!username) {
         return res.status(200).json({ message : 'User Not Found its happening here' });
     }
