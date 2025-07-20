@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, BackHandler } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, BackHandler, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ImageUp, Fence } from 'lucide-react-native';
 import { router } from 'expo-router';
@@ -23,6 +23,7 @@ const UserProfilePage = () => {
     const [LogPopup, ShowLogPopup] = useState(false)
     const [session, Setsessionout] = useState(false)
     const [loading, setloading] = useState(false)
+    
 
     const popUpBack = () => {
         if (LogPopup) {
@@ -37,7 +38,16 @@ const UserProfilePage = () => {
             return true
         }
     }
-
+    const handleShare = async () => {
+        const isShared = await Share.share({
+            message : `Check out @${username}'s profile on Bliss! 🌸\nhttps://bliss-3ucs.onrender.com/api/user/userprofile/${userData.username}`
+        })
+        if(isShared.action === Share.sharedAction ) {
+            setTimeout(() => {
+                
+            }, 1000);
+        }
+    }
 
 
 

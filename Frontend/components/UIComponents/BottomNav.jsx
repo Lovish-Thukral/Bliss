@@ -1,14 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TouchableOpacity, Text, View } from 'react-native'
 import { Home, Search, Film, MessageCircle, User } from 'lucide-react-native'
+import { usePathname } from 'expo-router';
 
 function BottomNav({router}) {
-
+    const path = usePathname()
     const [activeTab, setActiveTab] = useState('home');
     const Handleonclick = (tab) => {
-        setActiveTab(tab)
         router.push(tab)
+        setActiveTab(tab)
+        console.log(tab)
     }
+
+
 
     return (
         <View className="absolute bottom-0 w-full flex-row justify-around items-center py-3 bg-white shadow-lg border-t border-pink-100">

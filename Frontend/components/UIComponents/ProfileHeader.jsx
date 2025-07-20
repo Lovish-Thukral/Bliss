@@ -21,10 +21,13 @@ function ProfileHeader({ pic, follower, following, bio, name, username, postLeng
     }
 
     useEffect(() => {
+        if (!showFollower || !showFollowing) return;
         const backHandler = BackHandler.addEventListener("hardwareBackPress", popUpBack);
 
         return () => backHandler.remove();
-    }, [showFollower]);
+    }, [[showFollower, showFollowing]]);
+
+    
 
 
     return (
