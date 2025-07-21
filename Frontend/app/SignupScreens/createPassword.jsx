@@ -26,6 +26,7 @@ const CreatePassword = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [toggle, maketoggle] = useState(false);
+    const [showsnack, makeshowsnack] = useState(false)
 
     const isValid = password.length >= 8 && password === confirmPassword;
 
@@ -41,9 +42,13 @@ const CreatePassword = () => {
 
                 if (response.data.message === "User created successfully") {
                     console.log('created')
+                    makeshowsnack(true)
                     router.push('login');
+                    setTimeout(() => {
+                        makeshowsnack(false)
+                    }, 2000);
                 } else if (response.data.message === "User already existed") {
-                    router.replace("/SignupScreens/EnterName");
+                    router.replace("/SignupScreens/EnterUsername");
                 } else if (response.data.message === "All fields are required") {
                     router.replace("/signup");
                 }

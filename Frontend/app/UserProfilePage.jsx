@@ -122,7 +122,8 @@ const UserProfilePage = () => {
             <ScrollView className="px-6">
 
                 <View className="flex-row justify-evenly gap-4 mb-5 self-center px-3">
-                    <TouchableOpacity className="border border-pink-500 rounded-full py-2 w-1/2 items-center">
+                    <TouchableOpacity className="border border-pink-500 rounded-full py-2 w-1/2 items-center"
+                    onPress={() => router.push('EditProfile')}>
                         <Text className="text-pink-500 font-semibold">Edit Profile</Text>
                     </TouchableOpacity>
                     <TouchableOpacity className="border border-pink-500 rounded-full py-2 w-1/2 items-center">
