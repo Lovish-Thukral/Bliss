@@ -135,7 +135,7 @@ export const findUser = async (req, res) => {
 }
 
 export const openProfile = async (req, res) => {
-    const { username } = req.params; // ✅ direct access
+    const { username } = req.params;
     console.log(username)
     if (!username) {
 
@@ -220,44 +220,90 @@ export const logoutuser = async (req, res) => {
 
 
 export const editUser = async (req, res) => {
-
-    const params = req.params.editToMake;
-    const requestededit = req.body || {};
+    const { field } = req.params;
+    const { value, UserID } = req.body;
     const currentUser = req.user;
 
+    const fieldValidations = {
+        name: { type: 'string', maxLength: 50 },
+        username: { type: 'string', maxLength: 30, unique: true },
+        bio: { type: 'string', maxLength: 200 },
+    };
+
     try {
-        const check = await Userdata.findById(currentUser._id).select('-password');
-
-        if (!check) {
-            return res.status(404).json({ message: "User not found" });
+        const user = await Userdata.findById(currentUser._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        if (!check || !(params in check)) {
-            return res.status(400).json({ message: "invalid request", status: "operation failed" });
+        if (field === 'follow') {
+            if (!UserID) {
+                return res.status(400).json({ success: false, message: "Target user ID is required" });
+            }
+
+            if (UserID === currentUser._id.toString()) {
+                return res.status(400).json({ success: false, message: "Cannot follow yourself" });
+            }
+
+            const targetUser = await Userdata.findById(UserID);
+            if (!targetUser) {
+                return res.status(404).json({ success: false, message: "Target user not found" });
+            }
+
+            const isFollowing = user.following.includes(UserID);
+            const action = isFollowing ? 'unfollow' : 'follow';
+
+            await Promise.all([
+                Userdata.findByIdAndUpdate(currentUser._id, {
+                    [isFollowing ? '$pull' : '$addToSet']: { following: UserID }
+                }),
+                Userdata.findByIdAndUpdate(UserID, {
+                    [isFollowing ? '$pull' : '$addToSet']: { followers: currentUser._id }
+                })
+            ]);
+
+            return res.status(200).json({
+                success: true,
+                message: `Successfully ${action}ed user`,
+                data: { action, UserID, following: !isFollowing }
+            });
         }
 
-        const update = await Userdata.findByIdAndUpdate(
+
+        if (!fieldValidations[field]) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid update field",
+                allowedFields: ['follow', ...Object.keys(fieldValidations)]
+            });
+        }
+
+        if (value === undefined) {
+            return res.status(400).json({ success: false, message: `Value for ${field} is required` });
+        }
+
+        const updatedUser = await Userdata.findByIdAndUpdate(
             currentUser._id,
-            { ...requestededit },
-            { new: true }
+            { [field]: value },
+            { new: true, runValidators: true, select: '-password -__v' }
         );
 
-
-        if (!update) {
-            return res.status(500).json({ Message: "Internal Error Occurred", status: "Operation Failed" });
-        }
-
         return res.status(200).json({
-            message: `request update in ${params} success`,
-            Status: "operation success",
-            updatedData: update
+            success: true,
+            message: `${field} updated successfully`,
+            data: updatedUser
         });
 
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({ message: "server error", error: err.message });
+        console.error(`User edit error (${field}):`, err);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: err.message
+        });
     }
-}
+};
+
 
 
 export const checkusername = async (req, res) => {
