@@ -109,28 +109,48 @@ export const loginUser = async (req, res) => {
 
 
 export const findUser = async (req, res) => {
-    const { username } = req.body || {};
-    if (!username) {
+    const { username, UserID } = req.body || {};
+    if (!username && !UserID) {
         const datalist = await Userdata.find({}).select('username');
         const userlist = datalist.map(user => user.username);
         return res.status(200).json({ users: userlist, message: 'no body found' });
     }
 
-    const user = await Userdata.find({
-        $or: [
-            { username: { $regex: username } },
-            { name: { $regex: username, $options: 'i' } }
-        ]
-    }).select('username name profilepic');
+    if (username && !UserID) {
+        try {
+            const user = await Userdata.find({
+                $or: [
+                    { username: { $regex: username } },
+                    { name: { $regex: username, $options: 'i' } }
+                ]
+            }).select('username name profilepic');
 
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            return res.status(200).json({
+                userlist: user
+            }
+            );
+        } catch (error) {
+            res.status(400).json({ message: "error occured", error: error })
+        }
+
+
     }
 
-    return res.status(200).json({
-        userlist: user
+    if (!username && UserID) {
+        try {
+            const user = await Userdata.findById(UserID).select('username name profilepic');
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            return res.status(200).json({ ...user });
+        } catch (error) {
+            res.status(400).json({ message: "error occured", error: error })
+        }
     }
-    );
 
 }
 
@@ -253,7 +273,7 @@ export const editUser = async (req, res) => {
             const isFollowing = user.following.includes(UserID);
             const action = isFollowing ? 'unfollow' : 'follow';
 
-            await Promise.all([
+            const DBUpdate = await Promise.all([
                 Userdata.findByIdAndUpdate(currentUser._id, {
                     [isFollowing ? '$pull' : '$addToSet']: { following: UserID }
                 }),
@@ -262,11 +282,13 @@ export const editUser = async (req, res) => {
                 })
             ]);
 
-            return res.status(200).json({
-                success: true,
-                message: `Successfully ${action}ed user`,
-                data: { action, UserID, following: !isFollowing }
-            });
+            if (DBUpdate) {
+                return res.status(200).json({
+                    success: true,
+                    message: `Successfully ${action}ed user`,
+                    data: { action, UserID, following: !isFollowing }
+                });
+            }
         }
 
 

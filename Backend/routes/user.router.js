@@ -10,7 +10,7 @@ const router = Router();
 router.post('/signup', protectedLogin, signupUser);
 router.post('/login', protectedLogin, loginUser); 
 router.put('/edit/:field', middleauth, editUser);
-router.post('/listuser', middleauth ,findUser);
+router.post('/listuser', findUser);
 router.get('/userprofile/:username', openProfile);
 router.delete('/delete', middleauth, deleteUser);
 router.post('/logout', middleauth, logoutuser);
