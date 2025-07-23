@@ -142,7 +142,7 @@ export const findUser = async (req, res) => {
 
     if (!username && UserID) {
         try {
-            const user = await Userdata.findById(UserID).select('username name profilepic');
+            const user = await Userdata.findById(UserID).select('username name profilepic').lean();
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
