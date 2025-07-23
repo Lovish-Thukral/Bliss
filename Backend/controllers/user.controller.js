@@ -155,15 +155,13 @@ export const findUser = async (req, res) => {
 }
 
 export const openProfile = async (req, res) => {
-    const { username } = req.params;
-    console.log(username)
+    const { username } = req.params
     if (!username) {
-
-        return res.status(404).json({ message: 'User not found — username missing', username });
+        return res.status(400).json({ message: 'User not found — username missing', username });
     }
 
     try {
-        const user = await Userdata.findOne({ username }).select('username followers following bio profilepic posts name');
+        const user = await Userdata.findOne({ username }).select('username followers following bio profilepic posts name').lean();
 
         if (!user) {
             return res.status(404).json({ message: "User not found in DB" });
