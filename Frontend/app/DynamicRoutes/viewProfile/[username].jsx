@@ -6,9 +6,12 @@ import { ActivityIndicator, BackHandler, ScrollView, Text, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNav from '../../../components/UIComponents/BottomNav';
 import ProfileHeader from '../../../components/UIComponents/ProfileHeader';
+import { Followbtn } from '../../../components/UIComponents/Followbtn';
+import FollowEditbtn from '../../../components/UIComponents/stylingComponents/FollowEditbtn';
 
 const ProfilePage = () => {
-  const { userid } = useLocalSearchParams();
+
+  const { username } = useLocalSearchParams();
   const router = useRouter();
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -16,33 +19,31 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`https://bliss-3ucs.onrender.com/api/user/userprofile/${userid}`);
-        console.log(res.data)
+        const res = await axios.get(`https://bliss-3ucs.onrender.com/api/user/userprofile/${username}`);
         setUserData(res.data);
+
       } catch (error) {
-        console.log('Error name:', error.name);
-        console.log('Error message:', error.message);
         console.log('Full error:', error);
 
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     };
 
-    if (userid) fetchProfile();
+    if (username) fetchProfile();
   }, []);
 
   useEffect(() => {
-      const backAction = () => {
-        router.replace('/searchPage'); 
-        return true;
-      };
-  
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-  
-      return () => backHandler.remove(); // cleanup
-    }, []);
-  
+    const backAction = () => {
+      router.replace('/searchPage');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
+
 
   if (loading) {
     return (
@@ -73,15 +74,26 @@ const ProfilePage = () => {
         postLength={userData.posts.length}
       />
 
+      <View className="flex-row justify-evenly mb-5 px-4">
+        <View className="flex-1 mx-1">
+          <Followbtn
+            userID={userData._id}
+          />
+        </View>
+        <View className="flex-1 mx-1">
+          <FollowEditbtn
+            textval={'Message'} />
+        </View>
+      </View>
+
       <ScrollView className="px-6">
-        {/* Show user's posts or a placeholder if none */}
+
         {userData.posts.length === 0 ? (
           <View className="bg-gray-100 p-6 rounded-lg mb-20">
             <Text className="text-center text-gray-400">No posts yet...</Text>
           </View>
         ) : (
           <View className="mb-20">
-            {/* Render posts here if needed */}
             {userData.posts.map((post, index) => (
               <View key={index} className="bg-white p-4 mb-4 rounded-xl shadow-sm">
                 <Text>{post.caption}</Text>

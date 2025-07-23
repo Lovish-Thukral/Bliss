@@ -1,27 +1,26 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, BackHandler, Share } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ImageUp, Fence } from 'lucide-react-native';
-import { router } from 'expo-router';
-import { useSelector } from "react-redux";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axiosInstance from '../utils/axiosInstance';
-import ProfileHeader from '../components/UIComponents/ProfileHeader';
-import BottomNav from '../components/UIComponents/BottomNav';
+import { router } from 'expo-router';
+import { Fence } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, BackHandler, ScrollView, Share, Text, TouchableOpacity, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from "react-redux";
+import BottomNav from '../components/UIComponents/BottomNav';
+import ProfileHeader from '../components/UIComponents/ProfileHeader';
+import FollowEditbtn from '../components/UIComponents/stylingComponents/FollowEditbtn';
+import UploadImage from '../components/UIComponents/UploadImage';
+import axiosInstance from '../utils/axiosInstance';
+
 
 const UserProfilePage = () => {
-  const data = useSelector((state) => state.userData);
-  const [userData, setUserData] = useState(data);
+  const userData = useSelector((state) => state.userData);
 
-  // popup states
   const [sideMenu, showsideMenu] = useState(false);
   const [LogPopup, ShowLogPopup] = useState(false);
-  const [session, Setsessionout] = useState(false);
   const [loading, setloading] = useState(false);
 
-  // snackbar state
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -46,7 +45,7 @@ const UserProfilePage = () => {
   const handleShare = async () => {
     try {
       const isShared = await Share.share({
-        message: `Check out @${userData.username}'s profile on Bliss! 🌸\nhttps://bliss-3ucs.onrender.com/api/user/userprofile/${userData.username}`
+        message: `Check out @${userData.username}'s profile on Bliss! 🌸\n${'https://bliss-3ucs.onrender.com/api/user/userprofile'}/${userData.username}`
       });
 
       if (isShared.action === Share.sharedAction) {
@@ -57,29 +56,24 @@ const UserProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    const logout = async () => {
-      if (session) {
-        try {
-          setloading(true);
-          const LogoutRes = await axiosInstance.post('/user/logout');
-          if (LogoutRes.data.message === "logout successful") {
-            await AsyncStorage.removeItem('token');
-            router.replace('login')
-          } else {
-            showSnackbar("Logout failed. Try again.");
-          }
-        } catch (error) {
-          console.log("Logout error:", error);
-          showSnackbar("Logout error occurred.");
-        } finally {
-          setloading(false);
-        }
+  const handleLogout = async () => {
+    ShowLogPopup(false);
+    setloading(true);
+    try {
+      const LogoutRes = await axiosInstance.post('/user/logout');
+      if (LogoutRes.data.message === "logout successful") {
+        await AsyncStorage.removeItem('token');
+        router.replace('login');
+      } else {
+        showSnackbar("Logout failed. Try again.");
       }
-    };
-
-    logout();
-  }, [session]);
+    } catch (error) {
+      console.error("Logout error:", error);
+      showSnackbar("Logout error occurred.");
+    } finally {
+      setloading(false);
+    }
+  };
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", popUpBack);
@@ -87,7 +81,7 @@ const UserProfilePage = () => {
   }, [sideMenu, LogPopup]);
 
   return (
-    <SafeAreaView className="flex-1 bg-pink-50 relative">
+    <SafeAreaView className="flex-1 bg-pink-50">
       <ProfileHeader
         pic={userData.profilepic}
         follower={userData.followers}
@@ -96,45 +90,46 @@ const UserProfilePage = () => {
         name={userData.name}
         username={userData.username}
         postLength={userData.posts.length}
-        router={router}
       />
 
-      <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-24 right-0 z-10 p-8 shadow-l-2xl`}>
+      <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-24 right-0 z-10 p-8 shadow-md`}>
         <Text className="text-lg font-bold text-pink-500 mb-6">Menu</Text>
-        <TouchableOpacity onPress={() => router.push('/settings')}>
+        <TouchableOpacity onPress={() => { router.push('/settings'); showsideMenu(false); }} accessibilityLabel="Go to Settings">
           <Text className="text-base text-gray-700 mb-4">Settings</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/help')}>
+        <TouchableOpacity onPress={() => { router.push('/help'); showsideMenu(false); }} accessibilityLabel="Go to Help and Support">
           <Text className="text-base text-gray-700 mb-4">Help & Support</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => ShowLogPopup(!LogPopup)}>
+        <TouchableOpacity onPress={() => { ShowLogPopup(true); showsideMenu(false); }} accessibilityLabel="Open Log Out confirmation">
           <Text className="text-base text-red-500">Log Out</Text>
         </TouchableOpacity>
       </View>
 
       <View className="flex-row gap-4 absolute top-[7vh] right-5">
-        <TouchableOpacity>
-          <ImageUp color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => showsideMenu(!sideMenu)}>
+        <View>
+          <UploadImage />
+        </View>
+        <TouchableOpacity onPress={() => showsideMenu(!sideMenu)} >
           <Fence color="black" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="px-6">
-        <View className="flex-row justify-evenly gap-4 mb-5 self-center px-3">
-          <TouchableOpacity
-            className="border border-pink-500 rounded-full py-2 w-1/2 items-center"
-            onPress={() => router.push('EditProfile')}
-          >
-            <Text className="text-pink-500 font-semibold">Edit Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="border border-pink-500 rounded-full py-2 w-1/2 items-center"
-            onPress={handleShare}
-          >
-            <Text className="text-pink-500 font-semibold">Share Profile</Text>
-          </TouchableOpacity>
+      <ScrollView className="px-1 pt-4 ">
+        <View className="flex-row justify-evenly mb-5 px-4">
+          <View className="flex-1 mx-1">
+            <FollowEditbtn
+              textval="Edit Profile"
+              onpress={() => router.push('/EditProfile')}
+              Bol={true}
+            />
+          </View>
+          <View className="flex-1 mx-1">
+            <FollowEditbtn
+              textval="Share Profile"
+              onpress={handleShare}
+              Bol={false}
+            />
+          </View>
         </View>
 
         <View className="bg-gray-100 p-6 rounded-lg mb-20">
@@ -149,12 +144,14 @@ const UserProfilePage = () => {
           <TouchableOpacity
             className="border border-pink-500 rounded-full py-2 w-1/2 items-center"
             onPress={() => ShowLogPopup(false)}
+            accessibilityLabel="Cancel Logout"
           >
             <Text>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="border border-pink-500 rounded-full py-2 w-1/2 items-center"
-            onPress={() => Setsessionout(true)}
+            onPress={handleLogout}
+            accessibilityLabel="Confirm Log out"
           >
             {loading ? (
               <ActivityIndicator color="pink" />
@@ -169,11 +166,16 @@ const UserProfilePage = () => {
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={3000}
-        style={}
-
->
+        style={{
+          zIndex: 20,
+          bottom: 70,
+          width: '80%',
+          alignSelf: 'center',
+          backgroundColor: '#fdf2f8',
+        }}>
         {snackbarMessage}
       </Snackbar>
+
 
       <BottomNav router={router} />
     </SafeAreaView>

@@ -1,39 +1,39 @@
-import { useState } from 'react';
+import React from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
 import { Home, Search, Film, MessageCircle, User } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
+
+const TABS = [
+  { name: 'homepage', label: 'Home', icon: Home },
+  { name: 'searchPage', label: 'Search', icon: Search },
+  { name: 'reelspage', label: 'Reels', icon: Film },
+  { name: 'chatSection', label: 'Chat', icon: MessageCircle },
+  { name: 'UserProfilePage', label: 'Profile', icon: User },
+];
 
 function BottomNav() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('homepage');
+  const pathname = usePathname();
 
-  const Handleonclick = (tab) => {
-    setActiveTab(tab);
-    router.push(tab);
+  const handleOnClick = (tab) => {
+    if (pathname !== `/${tab}`) {
+      router.push(tab);
+    }
   };
 
   return (
     <View className="absolute bottom-0 w-full flex-row justify-around items-center py-3 bg-white shadow-lg border-t border-pink-100">
-      <TouchableOpacity onPress={() => Handleonclick('homepage')} className="items-center">
-        <Home color={activeTab === 'homepage' ? 'pink' : 'gray'} />
-        <Text className="text-xs text-gray-500">Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => Handleonclick('searchPage')} className="items-center">
-        <Search color={activeTab === 'searchPage' ? 'pink' : 'gray'} />
-        <Text className="text-xs text-gray-500">Search</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => Handleonclick('reelspage')} className="items-center">
-        <Film color={activeTab === 'reelspage' ? 'pink' : 'gray'} />
-        <Text className="text-xs text-gray-500">Reels</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => Handleonclick('chatSection')} className="items-center">
-        <MessageCircle color={activeTab === 'chatSection' ? 'pink' : 'gray'} />
-        <Text className="text-xs text-gray-500">Chat</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => Handleonclick('UserProfilePage')} className="items-center">
-        <User color={activeTab === 'UserProfilePage' ? 'pink' : 'gray'} />
-        <Text className="text-xs text-gray-500">Profile</Text>
-      </TouchableOpacity>
+      {TABS.map(({ name, label, icon: Icon }) => {
+        const isActive = pathname === `/${name}`; 
+        return (
+          <TouchableOpacity key={name} onPress={() => handleOnClick(name)} className="items-center">
+            <Icon color={isActive ? 'pink' : 'gray'} />
+            <Text className={`text-xs ${isActive ? 'text-pink-500' : 'text-gray-500'}`}>
+              {label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }

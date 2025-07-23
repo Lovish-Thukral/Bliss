@@ -1,13 +1,16 @@
 "use client";
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Search } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { BackHandler, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { BackHandler, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackButton from '../components/UIComponents/BackButton';
+import UserList from '../components/UIComponents/UserList';
 import axiosInstance from '../utils/axiosInstance';
 
+
 const SearchPage = () => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [resultlist, setResultList] = useState([]);
   const [query, setquery] = useState('');
@@ -30,7 +33,7 @@ const SearchPage = () => {
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove(); // cleanup
+    return () => backHandler.remove();
   }, []);
 
   useEffect(() => {
@@ -55,10 +58,8 @@ const SearchPage = () => {
   return (
     <SafeAreaView className="flex-1 bg-pink-50">
       <BackButton />
-
-      {/* Search Bar */}
-      <View className="flex-row items-center bg-white mx-4 px-4 pb-3 rounded-full shadow-md">
-        <Search color="gray" size={20} />
+      <View className="flex-row items-center bg-white mx-4 p-1.5 rounded-full shadow-md">
+        <Search color="gray" size={20} className={'ml-3'} />
         <TextInput
           placeholder="Search users..."
           value={searchQuery}
@@ -67,30 +68,8 @@ const SearchPage = () => {
         />
       </View>
 
-      <ScrollView className="px-4">
-        {resultlist.length === 0 ? (
-          <Text className="text-center text-gray-500 mt-10">No users found...</Text>
-        ) : (
-          resultlist.map((user, index) => (
-            <TouchableOpacity
-              key={user._id || index}
-              className="flex-row items-center bg-white rounded-xl p-4 mb-3 shadow-sm"
-              onPress={() => {
-                router.push(`/DynamicRoutes/viewProfile/${user.username}`)
-              }}
-            >
-              <Image
-                source={{ uri: user.profilepic || 'https://via.placeholder.com/150' }}
-                className="w-12 h-12 rounded-full bg-gray-300"
-              />
-              <View className="ml-4">
-                <Text className="text-base font-semibold text-gray-800">{user.username}</Text>
-                <Text className="text-sm text-gray-500">{user.name}</Text>
-              </View>
-            </TouchableOpacity>
-          ))
-        )}
-      </ScrollView>
+      <UserList users={resultlist} />
+
     </SafeAreaView>
   );
 };

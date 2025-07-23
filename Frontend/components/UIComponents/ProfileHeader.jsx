@@ -1,5 +1,5 @@
 import { Image, View, TouchableOpacity, Text, BackHandler } from "react-native";
-import FollowPage from "../../app/RepeatedScreens/FollowPage";
+import FollowPage from "./FollowPage";
 import { useState, useEffect } from "react";
 function ProfileHeader({ pic, follower, following, bio, name, username, postLength, router }) {
     const [showFollower, setShowFollower] = useState(false)
