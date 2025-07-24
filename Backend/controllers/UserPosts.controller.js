@@ -1,8 +1,8 @@
 import postData from "../modules/post.module.js";
 import Userdata from "../modules/user.module.js";
+import cloudinary from 'cloudinary'; 
 
 const uploadImage = async (imagePath) => {
-
     const options = {
         use_filename: true,
         unique_filename: true,
@@ -10,69 +10,107 @@ const uploadImage = async (imagePath) => {
     };
 
     try {
-
         const result = await cloudinary.uploader.upload(imagePath, options);
         console.log(result);
-        return result.public_id;
+        return {
+            public_id: result.public_id,
+            url: result.secure_url
+        };
     } catch (error) {
         console.error(error);
+        throw error; 
     }
 };
 
 export const postController = async (req, res) => {
     const curruntUser = req.user;
-    const image = req.file.path;
+    const image = req.file?.path;
     const { description, location } = req.body;
 
     if (!image) {
-        return res.status(400).json({ message: "invalid input" });
+        return res.status(400).json({ message: "Image is required" });
     }
 
-
     try {
-        const check = await Userdata.findById(curruntUser._id).select('username _id posts')
+        const check = await Userdata.findById(curruntUser._id).select('username _id posts');
+        if (!check) return res.status(404).json({ message: "User not found" });
 
-        if (!check) return res.status(404).json({ message: "invalid User" })
-
-        const imageuri = uploadImage(image)
+        const imageData = await uploadImage(image);
 
         const PostToUpload = new postData({
             alt: req.file.originalname,
             description: description || `${check.username}${Date.now()}`,
             location,
-            image: imageuri
-        })
-
-        const checkUpload = await PostToUpload.save()
-
-        if (!checkUpload) return res.status(500).json({ message: "unable to upload ! server error", status: "operation Failed" })
-
-        const addUserPost = await Userdata.findByIdAndUpdate(curruntUser._id, {
-            posts: [...check.posts, PostToUpload._id]
-        }, { new: true })
-
-        if (!addUserPost) return res.status(500).json({ Messsage: "Post Upload Failed at user DB", status: "operation Failed" })
-
-        res.status(200).json({
-            message: "upload Successful",
-            status: "operation Completed",
-            post: addUserPost.posts
+            image: imageData.url,
+            user: curruntUser._id
         });
 
+        const checkUpload = await PostToUpload.save();
+        if (!checkUpload) {
+            return res.status(500).json({ 
+                message: "Unable to upload post", 
+                status: "operation Failed" 
+            });
+        }
+
+        const addUserPost = await Userdata.findByIdAndUpdate(
+            curruntUser._id,
+            { $push: { posts: PostToUpload._id } }, 
+            { new: true }
+        );
+
+        if (!addUserPost) {
+            return res.status(500).json({ 
+                message: "Post upload failed at user DB", 
+                status: "operation Failed" 
+            });
+        }
+
+        res.status(201).json({
+            message: "Upload successful",
+            status: "operation Completed",
+            post: checkUpload
+        });
 
     } catch (error) {
-        console.log(error)
-        res.status(404).json({ message: "something went wrong", error: error })
+        console.error(error);
+        res.status(500).json({ 
+            message: "Something went wrong", 
+            error: error.message 
+        });
     }
-
-}
+};
 
 export const viewpostController = async (req, res) => {
     const { postIDs } = req.body;
 
-    if (!postIDs) return res.status(404).json({
-        message: "No Post Found"
-    });
+    if (!postIDs || !Array.isArray(postIDs) || postIDs.length === 0) {
+        return res.status(400).json({
+            message: "Invalid or empty post IDs array"
+        });
+    }
 
-    // const posts 
-}
+    try {
+        const posts = await Promise.all(
+            postIDs.map((post) => postData.find({_id : post})) 
+        )
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({
+                message: "No posts found with the provided IDs"
+            });
+        }
+
+        res.status(200).json({
+            message: "Posts retrieved successfully",
+            posts
+        });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error retrieving posts",
+            error: error.message
+        });
+    }
+};

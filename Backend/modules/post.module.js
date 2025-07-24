@@ -8,6 +8,7 @@ const PostSchema = new mongoose.Schema({
     Share: {type: Array, default: []},
     location: { type: String},
     image: {type : String, require : true},
+    user : {type : String, require : true}
 })
 
 const postData = mongoose.model("UserPosts", PostSchema);
