@@ -1,13 +1,28 @@
 import postData from "../modules/post.module.js";
 import Userdata from "../modules/user.module.js";
 
+const uploadImage = async (imagePath) => {
 
+    const options = {
+        use_filename: true,
+        unique_filename: true,
+        overwrite: false,
+    };
 
+    try {
+
+        const result = await cloudinary.uploader.upload(imagePath, options);
+        console.log(result);
+        return result.public_id;
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 export const postController = async (req, res) => {
     const curruntUser = req.user;
     const image = req.file.path;
-    const {description, location } = req.body;
+    const { description, location } = req.body;
 
     if (!image) {
         return res.status(400).json({ message: "invalid input" });
@@ -19,11 +34,13 @@ export const postController = async (req, res) => {
 
         if (!check) return res.status(404).json({ message: "invalid User" })
 
+        const imageuri = uploadImage(image)
+
         const PostToUpload = new postData({
             alt: req.file.originalname,
             description: description || `${check.username}${Date.now()}`,
             location,
-            image: image
+            image: imageuri
         })
 
         const checkUpload = await PostToUpload.save()
@@ -51,17 +68,11 @@ export const postController = async (req, res) => {
 }
 
 export const viewpostController = async (req, res) => {
-    const { username } = req.body;
-    const checkUser = await Userdata.findOne({ username: username }).select('posts username _id');
-    if (!checkUser) {
-        return res.status(404).json({ message: "User not found" });
-    }
+    const { postIDs } = req.body;
 
-    // const fetchedPosts = await 
-
-
-    res.status(200).json({
-        username: checkUser.username,
-        // fetchedPosts
+    if (!postIDs) return res.status(404).json({
+        message: "No Post Found"
     });
+
+    // const posts 
 }
