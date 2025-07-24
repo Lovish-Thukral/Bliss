@@ -4,18 +4,22 @@ import path from 'path';
 import publicDataConfig from '../config/userData/publicData.config.js';
 
 const postUpload = multer({
-
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            // fetching directory to save 
+            if (!req.user || !req.user._id) {
+                return cb(new Error("Authentication required or user ID missing."), null);
+            }
+
             const dirToSave = publicDataConfig
-            //syncing saving path
             const dir = path.resolve(dirToSave, 'userData');
             const savingPath = path.join(dir, req.user._id.toString());
 
             if (!fs.existsSync(savingPath)) {
-                console.log('not exist');
-                fs.mkdirSync(savingPath, { recursive: true });
+                try {
+                    fs.mkdirSync(savingPath, { recursive: true });
+                } catch (mkdirError) {
+                    return cb(mkdirError, null);
+                }
             }
             cb(null, savingPath);
         },
@@ -29,6 +33,6 @@ const postUpload = multer({
     limits: {
         fileSize: 1024 * 1024 * 10
     }
-}
-)
+});
+
 export default postUpload;
