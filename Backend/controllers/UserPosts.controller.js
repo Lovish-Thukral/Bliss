@@ -42,7 +42,7 @@ export const postController = async (req, res) => {
             description: description || `${check.username}${Date.now()}`,
             location,
             image: imageData.url,
-            user: curruntUser._id
+            user: check.username
         });
 
         const checkUpload = await PostToUpload.save();
