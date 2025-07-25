@@ -82,34 +82,32 @@ export const postController = async (req, res) => {
 };
 
 export const viewpostController = async (req, res) => {
-    const { postIDs } = req.body;
+    const { postID } = req.body; 
 
-    if (!postIDs || !Array.isArray(postIDs) || postIDs.length === 0) {
+    if (!postID) {
         return res.status(400).json({
-            message: "Invalid or empty post IDs array"
+            message: "Post ID is required"
         });
     }
 
     try {
-        const posts = await Promise.all(
-            postIDs.map((post) => postData.find({_id : post})) 
-        )
+        const post = await PostModel.findById(postID).lean(); 
 
-        if (!posts || posts.length === 0) {
+        if (!post) {
             return res.status(404).json({
-                message: "No posts found with the provided IDs"
+                message: "Post not found"
             });
         }
 
         res.status(200).json({
-            message: "Posts retrieved successfully",
-            posts
+            message: "Post retrieved successfully",
+            post
         });
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: "Error retrieving posts",
+            message: "Error retrieving post",
             error: error.message
         });
     }
