@@ -82,7 +82,7 @@ export const postController = async (req, res) => {
 };
 
 export const profileController = async (req, res) => {
-    // const curruntUser = req.user;
+    const curruntUser = req.user;
     const image = req.file?.path;
 
     if (!image) {
