@@ -82,7 +82,7 @@ export const postController = async (req, res) => {
 };
 
 export const profileController = async (req, res) => {
-    const curruntUser = req.user;
+    // const curruntUser = req.user;
     const image = req.file?.path;
 
     if (!image) {
@@ -92,7 +92,7 @@ export const profileController = async (req, res) => {
     try {
         const imageData = await uploadImage(image);
         const check = await Userdata.findByIdAndUpdate(curruntUser._id, {
-            image : imageData.url,
+            profilepic : imageData.url,
         },{ new: true }).select('username profilepic');
 
         if (!check) {
