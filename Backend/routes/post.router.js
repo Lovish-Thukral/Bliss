@@ -12,6 +12,6 @@ postRouter.put('/postUpload', middleauth, postUpload.single("image"), checkFilet
 
 postRouter.use((err, req, res, next) => MulterErrorUtil(err, req, res, next));
 
-postRouter.get('/viewposts', viewpostController);
+postRouter.post('/viewposts', viewpostController);
 
 export default postRouter;
