@@ -81,6 +81,42 @@ export const postController = async (req, res) => {
     }
 };
 
+export const profileController = async (req, res) => {
+    const curruntUser = req.user;
+    const image = req.file?.path;
+
+    if (!image) {
+        return res.status(400).json({ message: "Image is required" });
+    }
+
+    try {
+        const imageData = await uploadImage(image);
+        const check = await Userdata.findByIdAndUpdate(curruntUser._id, {
+            image : imageData.url,
+        },{ new: true }).select('username profilepic');
+
+        if (!check) {
+            return res.status(500).json({ 
+                message: "Unable to upload post or User Not Exist", 
+                status: "operation Failed" 
+            });
+        }
+
+        res.status(201).json({
+            message: "Upload successful",
+            status: "operation Completed",
+            profile : check
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            message: "Something went wrong", 
+            error: error.message 
+        });
+    }
+};
+
 export const viewpostController = async (req, res) => {
     const { postID } = req.body; 
 
