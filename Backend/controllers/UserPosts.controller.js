@@ -91,7 +91,7 @@ export const viewpostController = async (req, res) => {
     }
 
     try {
-        const post = await PostModel.findById(postID).lean(); 
+        const post = await postData.findById(postID).lean(); 
 
         if (!post) {
             return res.status(404).json({
