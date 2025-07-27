@@ -5,6 +5,7 @@ import UserDataUpdate from "../config/UserDataUpdate.js"
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
 import { updateData } from "@/components/reduxComponents/UserDataSlice.jsx";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -19,22 +20,23 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
-     try {
-      const data = await UserDataUpdate();
-      console.log(data)
-      if (!data) {
-        alert("Session Expired")
-        router.replace('./login')
-        return
+      try {
+        const data = await UserDataUpdate();
+        console.log(data)
+        if (!data) {
+          alert("Session Expired")
+          await AsyncStorage.removeItem('token');
+          router.replace('./login')
+          return
+        }
+
+        dispatch(updateData(data))
+        router.replace('./homepage')
+      } catch (error) {
+        console.log(error),
+          router.replace('login')
       }
 
-      dispatch(updateData(data))
-      router.replace('./homepage')
-     } catch (error) {
-      console.log(error),
-      router.replace('login')
-     }
-      
     })();
   }, []);
 

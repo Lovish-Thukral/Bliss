@@ -1,6 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, Text } from 'react-native'
 import { useNavigation } from 'expo-router'
+import { goBack } from 'expo-router/build/global-state/routing'
 
 function BackButton() {
     const navigation = useNavigation()

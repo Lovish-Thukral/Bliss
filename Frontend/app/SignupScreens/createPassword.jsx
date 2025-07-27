@@ -9,7 +9,7 @@ import BackButton from '../../components/UIComponents/BackButton';
 
 const fetchApi = async (data) => {
     try {
-        const res = await axios.post('https://bliss-3ucs.onrender.com/api/user/signup', data);
+        const res = await axios.post('https://bliss-olxz.onrender.com/api/user/signup', data);
         return { data: res.data, status: res.status };
     } catch (err) {
         return { data: { message: "Something went wrong" }, status: 500 };

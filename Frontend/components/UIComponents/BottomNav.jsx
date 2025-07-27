@@ -1,12 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
-import { Home, Search, Film, MessageCircle, User } from 'lucide-react-native';
+import { Home, Search, MessageCircle, User } from 'lucide-react-native';
 import { useRouter, usePathname } from 'expo-router';
 
 const TABS = [
   { name: 'homepage', label: 'Home', icon: Home },
   { name: 'searchPage', label: 'Search', icon: Search },
-  { name: 'reelspage', label: 'Reels', icon: Film },
   { name: 'chatSection', label: 'Chat', icon: MessageCircle },
   { name: 'UserProfilePage', label: 'Profile', icon: User },
 ];

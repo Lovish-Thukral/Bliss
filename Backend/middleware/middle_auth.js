@@ -23,6 +23,7 @@ const middleauth = async (req, res, next) => {
     }
 
     req.user = user;
+    console.log('verification done')
     next();
   } catch (error) {
     return res.status(400).json({ message: 'Token verification failed', error: error.message });

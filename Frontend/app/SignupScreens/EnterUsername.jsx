@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import BackButton from '../../components/UIComponents/BackButton';
 import Continuebtn from '../../components/UIComponents/Continuebtn';
+import { backendurl } from '../../utils/backendurl';
 
 const EnterName = () => {
   const [isUsable, setIsUsable] = useState(false);
@@ -31,7 +32,7 @@ const EnterName = () => {
         return;
       }
       try {
-        const res = await axios.post('https://bliss-3ucs.onrender.com/api/user/checkusername', {
+        const res = await axios.post(`${backendurl}/user/checkusername`, {
           username,
         });
         setIsUsable(res?.data?.status === false);

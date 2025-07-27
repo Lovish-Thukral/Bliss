@@ -32,30 +32,28 @@ const LoginPage = () => {
         try {
             let key;
             if (identifier.includes('@')) {
-                key = "email"
+                key = "email";
             } else if (!isNaN(identifier)) {
-                key = "mobile"
+                key = "mobile";
             } else {
-                key = "username"
+                key = "username";
             }
 
             const res = await axiosInstance.post('/user/login', {
-                [key]: identifier.toLowerCase(),
+                [key]: identifier.toLowerCase().trim(),
                 password,
             });
 
             const { token, message } = res.data;
 
             if (message === "Logged Successfully") {
-              const checkSave =   await AsyncStorage.setItem('token', token);
-               checkSave ?  console.log('saved') : console.log("errr saving")
+                await AsyncStorage.setItem('token', token);
                 router.replace('/');
             }
 
         } catch (err) {
             console.error('Login error:', err);
             alert(err?.response?.data?.message || 'Login failed. Try again.');
-            
         } finally {
             setLoading(false);
         }
