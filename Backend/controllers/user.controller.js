@@ -324,7 +324,6 @@ export const editUser = async (req, res) => {
     }
 };
 
-
 export const checkusername = async (req, res) => {
     const { username } = req.body;
     try {

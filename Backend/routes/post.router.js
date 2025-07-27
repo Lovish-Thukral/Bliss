@@ -8,7 +8,7 @@ import { MulterErrorUtil } from "../utilities/errorHandling.util.js";
 
 const postRouter = Router();
 
-postRouter.put('/postUpload', middleauth, postUpload.single("image"), checkFiletype, postController);
+postRouter.post('/postUpload', middleauth, postUpload.single("image"), checkFiletype, postController);
 postRouter.put('/profileUpload', middleauth, postUpload.single("image"), checkFiletype, profileController);
 
 postRouter.use((err, req, res, next) => MulterErrorUtil(err, req, res, next));
