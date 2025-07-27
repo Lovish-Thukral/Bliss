@@ -254,6 +254,18 @@ export const editUser = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
+        if (field !== 'follow' && !fieldValidations[field]) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid update field",
+                allowedFields: ['follow', ...Object.keys(fieldValidations)]
+            });
+        }
+        
+        if (field !== 'follow' && value === undefined) {
+             return res.status(400).json({ success: false, message: `Value for ${field} is required` });
+        }
+
         if (field === 'follow') {
             if (!UserID) {
                 return res.status(400).json({ success: false, message: "Target user ID is required" });
@@ -271,7 +283,7 @@ export const editUser = async (req, res) => {
             const isFollowing = user.following.includes(UserID);
             const action = isFollowing ? 'unfollow' : 'follow';
 
-            const DBUpdate = await Promise.all([
+            await Promise.all([
                 Userdata.findByIdAndUpdate(currentUser._id, {
                     [isFollowing ? '$pull' : '$addToSet']: { following: UserID }
                 }),
@@ -279,34 +291,23 @@ export const editUser = async (req, res) => {
                     [isFollowing ? '$pull' : '$addToSet']: { followers: currentUser._id }
                 })
             ]);
-
-            if (DBUpdate) {
-                return res.status(200).json({
-                    success: true,
-                    message: `Successfully ${action}ed user`,
-                    data: { action, UserID, following: !isFollowing }
-                });
-            }
-        }
-
-
-        if (!fieldValidations[field]) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid update field",
-                allowedFields: ['follow', ...Object.keys(fieldValidations)]
+            
+            return res.status(200).json({
+                success: true,
+                message: `Successfully ${action}ed user`,
+                data: { action, UserID, following: !isFollowing }
             });
         }
-
-        if (value === undefined) {
-            return res.status(400).json({ success: false, message: `Value for ${field} is required` });
-        }
-
+        
         const updatedUser = await Userdata.findByIdAndUpdate(
             currentUser._id,
             { [field]: value },
             { new: true, runValidators: true, select: '-password -__v' }
         );
+
+        if (!updatedUser) {
+             return res.status(404).json({ success: false, message: "User not found for update" });
+        }
 
         return res.status(200).json({
             success: true,
@@ -323,7 +324,6 @@ export const editUser = async (req, res) => {
         });
     }
 };
-
 
 
 export const checkusername = async (req, res) => {
