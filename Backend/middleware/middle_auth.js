@@ -6,7 +6,7 @@ const middleauth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(200).json({ message: 'Please login first', status: 'no token provided' });
+      return res.status(401).json({ message: 'Please login first', status: 'no token provided' });
     }
 
     const token = authHeader.split(' ')[1]; 
@@ -16,7 +16,7 @@ const middleauth = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid token', status: 'token error' });
     }
 
-    const user = await Userdata.findById(decoded.id).select(' _id username name bio profilepic loginstatus followers following posts');
+    const user = await Userdata.findById(decoded.id).select('_id username name bio profilepic loginstatus followers following posts');
 
     if (!user) {
       return res.status(404).json({ message: 'Invalid user! Please login again', status: 'middleware error' });

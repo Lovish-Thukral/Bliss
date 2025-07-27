@@ -1,34 +1,33 @@
-import { fileTypeFromStream } from 'file-type'
-import fs from 'fs';
-
+import { fileTypeFromBuffer } from 'file-type';
 
 const checkFiletype = async (req, res, next) => {
-    const filepath = await req.file.path
-    const streamFile = fs.createReadStream(filepath);
-    const type = await fileTypeFromStream(streamFile)
-    console.log('start ', type)
-    const allowedMimeTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "video/mp4",
-        "video/quicktime",
-        "video/3gpp",
-        "video/mpeg",
-        "video/x-m4v"
-    ];
+    if (!req.file) return next();
+    
+    try {
+        const buffer = req.file.buffer;
+        const type = await fileTypeFromBuffer(buffer);
+        const allowedMimeTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "video/mp4",
+            "video/quicktime",
+            "video/3gpp",
+            "video/mpeg",
+            "video/x-m4v"
+        ];
 
-    if (!type || !allowedMimeTypes.includes(type.mime)) {
+        if (!type || !allowedMimeTypes.includes(type.mime)) {
+            return res.status(415).json({
+                message: "invalid file type",
+                status: "operation failed"
+            });
+        }
 
-        fs.unlink(filepath, (error) => error ? console.log(error) : console.log('delete Success'))
-
-       return res.status(500).json({
-            message: "invalid file type",
-            status: "operation failed"
-        })
+        next();
+    } catch (error) {
+        res.status(500).json({ message: "File validation failed", error: error.message });
     }
-
-    next();
 }
 
 export default checkFiletype;

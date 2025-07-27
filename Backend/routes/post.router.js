@@ -5,7 +5,6 @@ import postUpload from "../middleware/postUpload.handle.js";
 import checkFiletype from "../middleware/FileSecurityCheck.js";
 import { MulterErrorUtil } from "../utilities/errorHandling.util.js";
 
-
 const postRouter = Router();
 
 postRouter.post('/postUpload', middleauth, postUpload.single("image"), checkFiletype, postController);
