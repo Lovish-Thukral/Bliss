@@ -38,88 +38,102 @@ export default uploadImage;
 
 
 
-// ✅ Post Upload Controller (No session)
+
 export const postController = async (req, res) => {
-    try {
-        const curruntUser = req.user;
-        console.log(curruntUser)
-        const { buffer, mimetype } = req.file;
-        const { description, location } = req.body;
-        console.log('accessed')
-        const user = await Userdata.findById(curruntUser._id);
-        console.log(user)
-        if (!user) return res.status(404).json({ message: "User not found" });
-        console.log('imagedata')
-        const imageData = await uploadImage(buffer, mimetype);
-        console.log(imageData)
+  try {
+    const curruntUser = req.user;
+    const { buffer, mimetype } = req.file;
+    const { description, location } = req.body;
+    const user = await Userdata.findById(curruntUser._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const imageData = await uploadImage(buffer, mimetype);
 
-        const PostToUpload = new postData({
-            alt: 'user_upload',
-            description: description || `${user.username}${Date.now()}`,
-            location,
-            image: imageData.url,
-            user: user.username
-        });
 
-        const savedPost = await PostToUpload.save();
+    const PostToUpload = new postData({
+      alt: 'user_upload',
+      description: description || `${user.username}${Date.now()}`,
+      location,
+      image: imageData.url,
+      user: user.username
+    });
 
-        user.posts.push(savedPost._id);
-        await user.save();
+    const savedPost = await PostToUpload.save();
 
-        res.status(201).json({
-            message: "Upload successful",
-            status: "operation Completed",
-            post: savedPost
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Something went wrong", error: error.message });
-    }
+    user.posts.push(savedPost._id);
+    await user.save();
+
+    res.status(201).json({
+      message: "Upload successful",
+      status: "operation Completed",
+      post: savedPost
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
 };
 
 // ✅ Profile Picture Upload Controller
 export const profileController = async (req, res) => {
-    try {
-        const curruntUser = req.user;
-        console.log(curruntUser)
-        const { buffer, mimetype } = req.file;
+  try {
+    const curruntUser = req.user;
+    console.log(curruntUser)
+    const { buffer, mimetype } = req.file;
 
-        console.log(buffer);
-        const imageData = await uploadImage(buffer, mimetype);
-        const user = await Userdata.findByIdAndUpdate(
-            curruntUser._id,
-            { profilepic: imageData.url },
-            { new: true }
-        ).select('username profilepic');
-        console.log(user)
-        if (!user) return res.status(404).json({ message: "User not found" });
+    console.log(buffer);
+    const imageData = await uploadImage(buffer, mimetype);
+    const user = await Userdata.findByIdAndUpdate(
+      curruntUser._id,
+      { profilepic: imageData.url },
+      { new: true }
+    ).select('username profilepic');
+    console.log(user)
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-        res.status(200).json({
-            message: "Upload successful",
-            status: "operation Completed",
-            profile: user
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Something went wrong", error: error.message });
-    }
+    res.status(200).json({
+      message: "Upload successful",
+      status: "operation Completed",
+      profile: user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
 };
 
 // ✅ View Post Controller
 export const viewpostController = async (req, res) => {
-    try {
-        const { postID } = req.body;
-        if (!postID) return res.status(400).json({ message: "Post ID is required" });
+  try {
+    const { postID } = req.body;
+    if (!postID) return res.status(400).json({ message: "Post ID is required" });
 
-        const post = await postData.findById(postID).lean();
-        if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await postData.findById(postID).lean();
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
-        res.status(200).json({
-            message: "Post retrieved successfully",
-            post
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error retrieving post", error: error.message });
-    }
+    res.status(200).json({
+      message: "Post retrieved successfully",
+      post
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving post", error: error.message });
+  }
+};
+
+
+export const homepagePosts = async (req, res) => {
+  try {
+    const size = parseInt(req.query.size) || 10;
+    const exclude = req.body?.exclude || [];
+
+    const posts = await postData.aggregate([
+      { $match: { _id: { $nin: exclude.map(id => new mongoose.Types.ObjectId(id)) } } },
+      { $sample: { size } }
+    ]);
+
+    return res.status(200).json({ posts });
+  } catch (error) {
+    console.error("Error fetching homepage posts:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
