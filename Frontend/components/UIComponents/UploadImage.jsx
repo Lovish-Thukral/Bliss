@@ -31,37 +31,43 @@ export default function UploadImage() {
   }
 
   const handleSubmit = async () => {
-    if (!imageUri) return
-    makedisable(true)
-    const form = new FormData()
-    form.append('image', {
-      uri: imageUri.imageUri,
-      name: imageUri.name,
-      type: imageUri.type
-    })
-    form.append('description', description)
-    form.append('location', location)
-    try {
-      const token = await AsyncStorage.getItem('token')
-      console.log(token)
-      const response = await fetch(
-        `http://192.168.1.9:8000/api/post/postUpload`,
-        {
-          method: 'POST',
-           headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: form
-        }
-      )
-      const res = await response.json()
-      console.log(res)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      closeModal()
+  if (!imageUri) return;
+  makedisable(true);
+
+  const form = new FormData();
+  form.append('image', {
+    uri: imageUri.imageUri,
+    name: imageUri.name,
+    type: imageUri.type || 'image/jpg',
+  });
+  form.append('description', description);
+  form.append('location', location);
+
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    const response = await fetch('http://192.168.1.9:8000/api/post/postUpload', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: form,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Upload failed:', response.status, errorText);
+    } else {
+      const res = await response.json();
+      console.log('Upload success:', res);
     }
+  } catch (error) {
+    console.error('Upload error:', error);
+  } finally {
+    closeModal(); // Always close the modal and reset UI
   }
+};
+
 
   useEffect(() => {
     let backHandler

@@ -7,6 +7,7 @@ import BackButton from '../components/UIComponents/BackButton'
 import pickImage from '../utils/ImagepickerUtil'
 import { Snackbar } from 'react-native-paper'
 import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function EditProfile() {
   const user = useSelector(state => state.userData)
@@ -39,29 +40,37 @@ function EditProfile() {
 
   const uploadWithFetch = async () => {
     const data = new FormData()
+    console.log(imageUri)
     data.append('image', {
       uri: imageUri.imageUri,
       name: imageUri.name,
       type: imageUri.type
     })
+
     try {
+      const token = await AsyncStorage.getItem('token')
       const response = await fetch(
         `http://192.168.1.9:8000/api/post/profileUpload`,
         {
           method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: data
         }
       )
       const json = await response.json()
+      console.log(json)
       if (json.newProfilePicURL) {
         setSnackVisible(true)
       }
     } catch (err) {
-      console.error(err)
+      console.error('Upload error:', err)
     } finally {
       closeModal()
     }
   }
+
 
   const handleSubmit = async () => {
     if (!imageUri) return

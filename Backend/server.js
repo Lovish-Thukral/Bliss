@@ -12,7 +12,10 @@ import Chatrouter from './routes/chat.route.js';
 import { Server } from 'socket.io';
 import { createServer } from 'node:http';
 
+
 const server = express();
+
+dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -52,7 +55,6 @@ io.on("connection", (socket) => {
 })
 
 
-dotenv.config();
 server.use(cookieParser());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }))

@@ -1,1 +1,1 @@
-export const backendurl = 'http://192.168.1.9:8000/api'
+export const backendurl = 'https://bliss-7r87.onrender.com'
