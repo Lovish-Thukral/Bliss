@@ -50,7 +50,7 @@ function EditProfile() {
     try {
       const token = await AsyncStorage.getItem('token')
       const response = await fetch(
-        `http://192.168.1.9:8000/api/post/profileUpload`,
+        `https://bliss-7r87.onrender.com/api/post/profileUpload`,
         {
           method: 'PUT',
           headers: {

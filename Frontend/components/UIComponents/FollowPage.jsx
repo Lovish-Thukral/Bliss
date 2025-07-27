@@ -16,7 +16,7 @@ const FollowPage = ({ Backbtn, followlist }) => {
         if (followlist.length < 0) return
         const responses = await Promise.all(
           followlist.map((id) =>
-            axios.post("https://bliss-3ucs.onrender.com/api/user/listuser", {
+            axios.post("https://bliss-7r87.onrender.com/api/user/listuser", {
               UserID: id,
             })
           )

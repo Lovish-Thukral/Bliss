@@ -49,7 +49,7 @@ const EditSection = () => {
             if (isValid) {
                 const checkUsername = async () => {
                     try {
-                        const res = await axios.post('https://bliss-3ucs.onrender.com/api/user/checkusername', {
+                        const res = await axios.post('https://bliss-7r87.onrender.com/api/user/checkusername', {
                             username: inn
                         });
 

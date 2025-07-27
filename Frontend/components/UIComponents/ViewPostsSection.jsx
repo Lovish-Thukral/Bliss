@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native'
 import axios from 'axios'
 import { ActivityIndicator } from 'react-native-paper'
 import ScrollviewPosts from './ScrollviewPosts'
 
-const ITEM_HEIGHT = 140; // h-40 + margin + some space for caption
-const SNAP_INTERVAL = ITEM_HEIGHT * 3;
+const screenWidth = Dimensions.get('window').width;
+const imageSize = screenWidth / 3;
 
 function ViewPostsSection({ posts }) {
-  const [pics, setPics] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [largePostVisible, setLargePostVisible] = useState(false)
-  const [selectedPostIndex, setSelectedPostIndex] = useState(0)
+  const [pics, setPics] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [largePostVisible, setLargePostVisible] = useState(false);
+  const [selectedPostIndex, setSelectedPostIndex] = useState(0);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -19,38 +19,32 @@ function ViewPostsSection({ posts }) {
         setLoading(true);
         const responses = await Promise.all(
           posts.map((post) =>
-            axios.post('https://bliss-3ucs.onrender.com/api/post/viewposts', { postID: post })
+            axios.post('https://bliss-7r87.onrender.com/api/post/viewposts', { postID: post })
           )
         );
-        const postsData = responses.map((res) => res.data.post)
-        setPics(postsData)
-
+        const postsData = responses.map((res) => res.data.post);
+        setPics(postsData);
       } catch (err) {
-        console.error('Error fetching posts:', err)
+        console.error('Error fetching posts:', err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (posts && posts.length > 0) {
-      fetchPosts()
+      fetchPosts();
     } else {
-      setPics([])
+      setPics([]);
     }
-  }, [posts])
-
-  const rows = [];
-  for (let i = 0; i < pics.length; i += 3) {
-    rows.push(pics.slice(i, i + 3));
-  }
+  }, [posts]);
 
   const handleImagePress = (index) => {
-    setSelectedPostIndex(index)
-    setLargePostVisible(true)
-  }
+    setSelectedPostIndex(index);
+    setLargePostVisible(true);
+  };
 
   return (
-    <View className="flex-1 p-2 mb-20">
+    <View className="flex-1 mb-20">
       {loading ? (
         <ActivityIndicator className="my-5 text-gray-400" />
       ) : pics.length === 0 ? (
@@ -59,48 +53,43 @@ function ViewPostsSection({ posts }) {
         <>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            snapToInterval={SNAP_INTERVAL}
-            decelerationRate="fast"
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
           >
-            {rows.map((rowItems, rowIndex) => (
-              <View key={rowIndex} className="flex-row mb-1">
-                {rowItems.map((post, index) => (
-                  <TouchableOpacity 
-                    key={index} 
-                    className="flex-1 mr-1 mb-1 bg-gray-100 rounded-lg overflow-hidden"
-                    onPress={() => handleImagePress(rowIndex * 3 + index)}
-                  >
-                    <Image
-                      source={{ uri: post.image }}
-                      className="w-full h-32"
-                      resizeMode="cover"
-                    />
-                    {post.caption && (
-                      <Text className="p-1 text-xs text-gray-800 truncate">
-                        {post.caption}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
+            {pics.map((post, index) => (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  width: imageSize,
+                  height: imageSize,
+                  borderWidth: 0.5,
+                  borderColor: '#fff',
+                }}
+                onPress={() => handleImagePress(index)}
+              >
+                <Image
+                  source={{ uri: post.image }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
             ))}
           </ScrollView>
 
-          {/* {largePostVisible && (
+          {largePostVisible && (
             <View className="absolute inset-0 bg-black z-50">
-              <ScrollviewPosts 
+              <ScrollviewPosts
                 posts={pics}
                 initialIndex={selectedPostIndex}
                 isHome={false}
                 onClose={() => setLargePostVisible(false)}
               />
             </View>
-          )} */}
+          )} 
+         
         </>
       )}
     </View>
-  )
+  );
 }
 
-export default ViewPostsSection
+export default ViewPostsSection;

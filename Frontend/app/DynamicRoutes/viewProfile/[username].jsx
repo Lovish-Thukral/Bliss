@@ -8,9 +8,11 @@ import BottomNav from '../../../components/UIComponents/BottomNav';
 import ProfileHeader from '../../../components/UIComponents/ProfileHeader';
 import { Followbtn } from '../../../components/UIComponents/Followbtn';
 import FollowEditbtn from '../../../components/UIComponents/stylingComponents/FollowEditbtn';
+import { useSelector } from 'react-redux';
+
 
 const ProfilePage = () => {
-
+  const selector = useSelector((state) => state.userData.following);
   const { username } = useLocalSearchParams();
   const router = useRouter();
   const [userData, setUserData] = useState({});
@@ -19,7 +21,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`https://bliss-3ucs.onrender.com/api/user/userprofile/${username}`);
+        const res = await axios.get(`https://bliss-7r87.onrender.com/api/user/userprofile/${username}`);
         setUserData(res.data);
 
       } catch (error) {
@@ -71,18 +73,20 @@ const ProfilePage = () => {
         bio={userData.bio}
         name={userData.name}
         username={userData.username}
-        postLength={userData.posts.length}
+        postLength={userData.posts.length ? userData.post.length : 0}
       />
 
       <View className="flex-row justify-evenly mb-5 px-4">
-        <View className="flex-1 mx-1">
+        <View className="w-full items-center mx-1">
           <Followbtn
             userID={userData._id}
           />
         </View>
-        <View className="flex-1 mx-1">
-          <FollowEditbtn
-            textval={'Message'} />
+        <View className="w-full items-center mx-1">
+          {selector.length > 0 && selector.includes(userData._id) && (
+            <FollowEditbtn textval={'Message'} />
+          )}
+
         </View>
       </View>
 

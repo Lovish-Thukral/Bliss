@@ -75,7 +75,7 @@ const UserProfilePage = () => {
   const handleShare = async () => {
     try {
       const isShared = await Share.share({
-        message: `Check out @${userData.username}'s profile on Bliss! 🌸\n${'https://bliss-3ucs.onrender.com/api/user/userprofile'}/${userData.username}`
+        message: `Check out @${userData.username}'s profile on Bliss! 🌸\n${'hhttps://bliss-7r87.onrender.com/api/user/userprofile'}/${userData.username}`
       });
       if (isShared.action === Share.sharedAction) {
         showSnackbar("Profile shared!");
@@ -133,7 +133,7 @@ const UserProfilePage = () => {
             postLength={userData.posts.length}
           />
 
-          <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-0 right-0 z-10 p-8 shadow-md`}>
+          <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-0 right-0 z-10 shadow-md`}>
             <View className="absolute">
               <TouchableOpacity onPress={() => {showsideMenu(false)}}>
                 <Text className="text-base text-pink-500 mb-4 left-5 top-3"> {'< Back'} </Text>
@@ -160,8 +160,8 @@ const UserProfilePage = () => {
             </TouchableOpacity>
           </View>
 
-          <View className="px-1 pt-4 pb-20">
-            <View className="flex-row justify-evenly mb-5 px-4">
+          <View className="px-1 pt-4">
+            <View className="flex-row justify-evenly pr-2">
               <View className="flex-1 mx-1">
                 <FollowEditbtn
                   textval="Edit Profile"
@@ -177,9 +177,12 @@ const UserProfilePage = () => {
                 />
               </View>
             </View>
-            <ViewPostsSection posts={userData.posts} />
           </View>
         </ScrollView>
+        <View className = "flex-1 absolute top-[35vh]">
+          
+            <ViewPostsSection posts={userData.posts} />
+        </View>
 
         <View className={`${LogPopup ? "flex" : "hidden"} absolute self-center top-1/2 bg-white shadow-xl shadow-black p-10 items-center space-y-2 rounded-xl border border-pink-500 border-opacity-10 border-0.5 z-30`}>
           <Text className="text-xl font-semibold text-gray-800">Logout Confirmation</Text>

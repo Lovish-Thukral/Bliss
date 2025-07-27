@@ -1,1 +1,3 @@
-export const backendurl = 'https://bliss-7r87.onrender.com'
+export default attachbackend = () => {
+    return "https://bliss-7r87.onrender.com"
+}
