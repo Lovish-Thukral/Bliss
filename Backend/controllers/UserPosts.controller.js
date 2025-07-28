@@ -137,3 +137,67 @@ export const homepagePosts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const likeComment = async (req, res) => {
+    const { ID } = req.query;         // Post ID from query parameters
+    const { operation } = req.params;  // 'like' or 'unlike' from route path
+    const { user } = req.user;
+    const {comment} = req.body;
+
+    if (!ID || !operation || !user) {
+        return res.status(400).json({
+            message: "Missing required parameters: ID, operation, or user"
+        });
+    }
+
+    try {
+        
+        if (operation === 'like') {
+            const updatedPost = await postData.findByIdAndUpdate(
+                ID,
+                { 
+                    $addToSet: { likesCount: user._id }
+                },
+                { new: true } 
+            );
+
+            if (!updatedPost) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+
+            return res.status(200).json({
+                message: "Post liked successfully",
+                post: updatedPost
+            });
+        }
+        else if (operation === 'unlike') {
+            const updatedPost = await postData.findByIdAndUpdate(
+                ID,
+                { 
+                    $pull: { likesCount: user._id } 
+                },
+                { new: true }  
+            );
+
+            if (!updatedPost) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+
+            return res.status(200).json({
+                message: "Post unliked successfully",
+                post: updatedPost
+            });
+        }
+        else {
+            return res.status(400).json({
+                message: "Invalid operation. Use 'like' or 'unlike'"
+            });
+        }
+    } catch (error) {
+        console.error("Error updating like status:", error);
+        return res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};

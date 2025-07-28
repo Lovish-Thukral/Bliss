@@ -9,7 +9,7 @@ const PostSchema = new mongoose.Schema({
     location: { type: String},
     image: {type : String, require : true},
     user : {type : String, require : true}
-})
+}, {timestamps : true})
 
 const postData = mongoose.model("UserPosts", PostSchema);
 export default postData;
