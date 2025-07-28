@@ -82,7 +82,7 @@ function EditProfile() {
     <SafeAreaView>
       <View>
         <BackButton />
-        <TouchableOpacity className="top-0 absolute right-5">
+        <TouchableOpacity className="top-0 absolute right-5" onPress={() => router.push('/UserProfilePage')}>
           <Check className="text-pink-500" />
         </TouchableOpacity>
         <View className="relative mt-4 ">

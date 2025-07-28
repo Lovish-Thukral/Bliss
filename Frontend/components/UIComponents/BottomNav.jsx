@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'expo-router';
 const TABS = [
   { name: 'homepage', label: 'Home', icon: Home },
   { name: 'searchPage', label: 'Search', icon: Search },
-  { name: 'chatSection', label: 'Chat', icon: MessageCircle },
+  { name: 'ChatListPage', label: 'Chat', icon: MessageCircle },
   { name: 'UserProfilePage', label: 'Profile', icon: User },
 ];
 

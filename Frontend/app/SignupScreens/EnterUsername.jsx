@@ -32,7 +32,7 @@ const EnterName = () => {
         return;
       }
       try {
-        const res = await axios.post(`${backendurl}/user/checkusername`, {
+        const res = await axios.post(`https://bliss-7r87.onrender.com/api/user/checkusername`, {
           username,
         });
         setIsUsable(res?.data?.status === false);
@@ -74,7 +74,7 @@ const EnterName = () => {
         {!isUsable && input.length > 4 && <Text className="text-red-500 font-semibold text-sm mb-6"> Username is not available. </Text>}
 
         <Continuebtn
-          nextpage="SignupScreens/CreatePassword"
+          nextpage="SignupScreens/createPassword"
           checkFun={() => checkFun}
           patchtype="username"
           patchvalue={input.toLowerCase()}

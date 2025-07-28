@@ -3,18 +3,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Fence } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, BackHandler, ScrollView, Share, Text, TouchableOpacity, View, RefreshControl } from 'react-native';
+import { ActivityIndicator, BackHandler, RefreshControl, ScrollView, Share, Text, TouchableOpacity, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from "react-redux";
+import { updateData } from '../components/reduxComponents/UserDataSlice';
 import BottomNav from '../components/UIComponents/BottomNav';
 import ProfileHeader from '../components/UIComponents/ProfileHeader';
 import FollowEditbtn from '../components/UIComponents/stylingComponents/FollowEditbtn';
 import UploadImage from '../components/UIComponents/UploadImage';
-import axiosInstance from '../utils/axiosInstance';
-import UserDataUpdate from '../config/UserDataUpdate';
-import { updateData } from '../components/reduxComponents/UserDataSlice';
 import ViewPostsSection from '../components/UIComponents/ViewPostsSection';
+import UserDataUpdate from '../config/UserDataUpdate';
+import axiosInstance from '../utils/axiosInstance';
 
 const UserProfilePage = () => {
   const router = useRouter();
@@ -112,28 +112,7 @@ const UserProfilePage = () => {
   return (
     <SafeAreaView className="flex-1 bg-pink-50">
       <View className="flex-1">
-        <ScrollView 
-          className="flex-1"
-          refreshControl={
-            <RefreshControl 
-              refreshing={refreshing} 
-              onRefresh={onRefresh} 
-              colors={['#EC4899']}
-              tintColor="#EC4899"
-            />
-          }
-        >
-          <ProfileHeader
-            pic={userData.profilepic}
-            follower={userData.followers}
-            following={userData.following}
-            bio={userData.bio}
-            name={userData.name}
-            username={userData.username}
-            postLength={userData.posts.length}
-          />
-
-          <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-0 right-0 z-10 shadow-md`}>
+        <View className={`${sideMenu ? "flex" : "hidden"} bg-pink-50 h-[100vh] w-[100vw] absolute top-0 right-0 z-50 px-8 shadow-md`}>
             <View className="absolute">
               <TouchableOpacity onPress={() => {showsideMenu(false)}}>
                 <Text className="text-base text-pink-500 mb-4 left-5 top-3"> {'< Back'} </Text>
@@ -150,6 +129,28 @@ const UserProfilePage = () => {
               <Text className="text-base text-red-500">Log Out</Text>
             </TouchableOpacity>
           </View>
+        <ScrollView 
+          className="flex-1 z-20"
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              colors={['#EC4899']}
+              tintColor="#EC4899"
+            />
+          }
+        >
+          <ProfileHeader
+            pic={userData.profilepic}
+            follower={userData.followers}
+            following={userData.following}
+            bio={userData.bio}
+            name={userData.name}
+            username={userData.username}
+            postLength={userData.posts}
+          />
+
+          
 
           <View className="flex-row gap-4 absolute top-[2.2vh] right-5 z-10">
             <View>
@@ -178,11 +179,19 @@ const UserProfilePage = () => {
               </View>
             </View>
           </View>
+         <ScrollView>
+
+        {userData.posts.length === 0 ? (
+          <View className="bg-gray-100 p-6 rounded-lg mb-20">
+            <Text className="text-center text-gray-400">No posts yet...</Text>
+          </View>
+        ) : (
+          <View>
+            <ViewPostsSection posts={userData.posts}/>
+          </View>
+        )}
+      </ScrollView>
         </ScrollView>
-        <View className = "flex-1 absolute top-[35vh]">
-          
-            <ViewPostsSection posts={userData.posts} />
-        </View>
 
         <View className={`${LogPopup ? "flex" : "hidden"} absolute self-center top-1/2 bg-white shadow-xl shadow-black p-10 items-center space-y-2 rounded-xl border border-pink-500 border-opacity-10 border-0.5 z-30`}>
           <Text className="text-xl font-semibold text-gray-800">Logout Confirmation</Text>

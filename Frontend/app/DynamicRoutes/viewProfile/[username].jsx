@@ -9,6 +9,7 @@ import ProfileHeader from '../../../components/UIComponents/ProfileHeader';
 import { Followbtn } from '../../../components/UIComponents/Followbtn';
 import FollowEditbtn from '../../../components/UIComponents/stylingComponents/FollowEditbtn';
 import { useSelector } from 'react-redux';
+import ViewPostsSection from '../../../components/UIComponents/ViewPostsSection';
 
 
 const ProfilePage = () => {
@@ -46,6 +47,7 @@ const ProfilePage = () => {
     return () => backHandler.remove();
   }, []);
 
+  const canmessage = (selector.includes(userData._id))
 
   if (loading) {
     return (
@@ -73,36 +75,31 @@ const ProfilePage = () => {
         bio={userData.bio}
         name={userData.name}
         username={userData.username}
-        postLength={userData.posts.length ? userData.post.length : 0}
+        postLength={userData.posts}
       />
 
-      <View className="flex-row justify-evenly mb-5 px-4">
-        <View className="w-full items-center mx-1">
+      <View className="flex-row justify-evenly mb-5 pr-6 pl-2">
+        <View className="w-1/2 items-center mx-1">
           <Followbtn
             userID={userData._id}
           />
         </View>
-        <View className="w-full items-center mx-1">
-          {selector.length > 0 && selector.includes(userData._id) && (
-            <FollowEditbtn textval={'Message'} />
-          )}
-
+        <View className="w-1/2 items-center mx-1">
+          {canmessage ? (
+            <FollowEditbtn textval={'Message'} onpress={ () => router.push(`/DynamicRoutes/chattingPage/${userData._id}`)} />
+          ) : null}
         </View>
       </View>
 
-      <ScrollView className="px-6">
+      <ScrollView>
 
         {userData.posts.length === 0 ? (
           <View className="bg-gray-100 p-6 rounded-lg mb-20">
             <Text className="text-center text-gray-400">No posts yet...</Text>
           </View>
         ) : (
-          <View className="mb-20">
-            {userData.posts.map((post, index) => (
-              <View key={index} className="bg-white p-4 mb-4 rounded-xl shadow-sm">
-                <Text>{post.caption}</Text>
-              </View>
-            ))}
+          <View>
+            <ViewPostsSection posts={userData.posts}/>
           </View>
         )}
       </ScrollView>

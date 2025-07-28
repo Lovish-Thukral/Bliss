@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
 import { updateData } from "@/components/reduxComponents/UserDataSlice.jsx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 
@@ -24,7 +25,6 @@ export default function Index() {
         const data = await UserDataUpdate();
         console.log(data)
         if (!data) {
-          alert("Session Expired")
           await AsyncStorage.removeItem('token');
           router.replace('./login')
           return

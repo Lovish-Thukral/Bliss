@@ -64,6 +64,7 @@ const CreatePassword = () => {
           console.log('created');
           makeshowsnack(true);
           router.push('login');
+          alert("account created SuccessFully, Please Login to Continue")
           setTimeout(() => {
             makeshowsnack(false);
           }, 2000);

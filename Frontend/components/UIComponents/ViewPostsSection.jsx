@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native'
-import axios from 'axios'
-import { ActivityIndicator } from 'react-native-paper'
-import ScrollviewPosts from './ScrollviewPosts'
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import axios from 'axios';
+import { ActivityIndicator } from 'react-native-paper';
+import PostDialog from './postbox';
+import { LayoutGrid, PictureInPicture2 } from 'lucide-react-native';
 
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 const imageSize = screenWidth / 3;
 
 function ViewPostsSection({ posts }) {
   const [pics, setPics] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [largePostVisible, setLargePostVisible] = useState(false);
   const [selectedPostIndex, setSelectedPostIndex] = useState(0);
+  const [column, setcolumn] = useState(false)
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -40,56 +42,64 @@ function ViewPostsSection({ posts }) {
 
   const handleImagePress = (index) => {
     setSelectedPostIndex(index);
-    setLargePostVisible(true);
+    setcolumn(true)
   };
 
-  return (
-    <View className="flex-1 mb-20">
+ return (
+  <View className="flex-1">
+    {/* Header buttons */}
+    <View className="flex-row justify-between w-full p-5 border border-gray-200">
+      <TouchableOpacity className="flex-1 items-center" onPress={() => setcolumn(false)}>
+        <LayoutGrid />
+      </TouchableOpacity>
+      <TouchableOpacity className="flex-1 items-center" onPress={() => setcolumn(true)}>
+        <PictureInPicture2 />
+      </TouchableOpacity>
+    </View>
+
+    {/* Scrollable content */}
       {loading ? (
         <ActivityIndicator className="my-5 text-gray-400" />
       ) : pics.length === 0 ? (
         <Text className="my-5 text-center text-gray-400">No posts yet...</Text>
-      ) : (
-        <>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-          >
-            {pics.map((post, index) => (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  width: imageSize,
-                  height: imageSize,
-                  borderWidth: 0.5,
-                  borderColor: '#fff',
-                }}
-                onPress={() => handleImagePress(index)}
-              >
-                <Image
-                  source={{ uri: post.image }}
-                  style={{ width: '100%', height: '100%' }}
-                  resizeMode="cover"
-                />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {largePostVisible && (
-            <View className="absolute inset-0 bg-black z-50">
-              <ScrollviewPosts
-                posts={pics}
-                initialIndex={selectedPostIndex}
-                isHome={false}
-                onClose={() => setLargePostVisible(false)}
+      ) : !column ? (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+        >
+          {pics.map((post, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                width: imageSize,
+                height: imageSize,
+                borderWidth: 0.5,
+                borderColor: '#fff',
+              }}
+              onPress={() => handleImagePress(index)}
+            >
+              <Image
+                source={{ uri: post.image }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
               />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      ) : (
+        <ScrollView className="px-3 pb-28 mt-3 flex-grow"
+        >
+          {pics.map((post, index) => (
+            <View className="mb-4" key={index}>
+              <PostDialog post={post} />
             </View>
-          )} 
-         
-        </>
+          ))}
+        </ScrollView>
       )}
-    </View>
-  );
+    
+  </View>
+);
+
 }
 
 export default ViewPostsSection;

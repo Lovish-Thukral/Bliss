@@ -55,7 +55,7 @@ function ProfileHeader({ pic, follower, following, bio, name, username, postLeng
                     />
                     <View className="flex-row justify-between flex-1 ml-6">
                         <View className="items-center">
-                            <Text className="text-lg font-bold text-gray-800">{postLength}</Text>
+                            <Text className="text-lg font-bold text-gray-800">{postLength.length}</Text>
                             <Text className="text-xs text-gray-500">Posts</Text>
                         </View>
                         <TouchableOpacity className="items-center"

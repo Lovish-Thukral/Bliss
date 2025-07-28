@@ -10,10 +10,12 @@ const UserDataSlice = createSlice({
         profilepic: null,
         followers: null,
         following: null,
-        bio: null
+        bio: null,
+        _id : null
     },
     reducers: {
         updateData: (state, action) => {
+            state._id = action.payload._id
             state.bio = action.payload.bio
             state.name = action.payload.name
             state.username = action.payload.username
