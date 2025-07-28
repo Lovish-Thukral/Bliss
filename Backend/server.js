@@ -37,7 +37,7 @@ io.on('connection', (Socket) => {
     })
 
     Socket.on('privatemsg', ({ from, toString, text }) => {
-        const target = onlineuser.get(to);
+        const target = onlineuser.get(toString);
         if (target) {
             io.to(target).emit('privatemsg', { from, text })
         }
