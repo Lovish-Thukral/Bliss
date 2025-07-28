@@ -142,9 +142,8 @@ export const likeComment = async (req, res) => {
     const { ID } = req.query;         // Post ID from query parameters
     const { operation } = req.params;  // 'like', 'unlike', or 'comment' from route path
     const { user } = req.user;         // Authenticated user from middleware
-    const { comment } = req.body;      // Comment text from request body
+    const { comment } = req.body || ''      // Comment text from request body
 
-    // Validate required fields based on operation
     if (!ID || !operation || !user) {
         return res.status(400).json({
             message: "Missing required parameters: ID, operation, or user"
@@ -157,9 +156,9 @@ export const likeComment = async (req, res) => {
             const updatedPost = await postData.findByIdAndUpdate(
                 ID,
                 { 
-                    $addToSet: { likesCount: user._id }  // Add user to likes array (no duplicates)
+                    $addToSet: { likesCount: user._id } 
                 },
-                { new: true }  // Return updated document
+                { new: true }
             );
 
             if (!updatedPost) {
