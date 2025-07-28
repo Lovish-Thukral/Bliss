@@ -139,10 +139,10 @@ export const homepagePosts = async (req, res) => {
 };
 
 export const likeComment = async (req, res) => {
-    const { ID } = req.query;         // Post ID from query parameters
-    const { operation } = req.params;  // 'like', 'unlike', or 'comment' from route path
-    const { user } = req.user;         // Authenticated user from middleware
-    const { comment } = req.body || ''      // Comment text from request body
+    const { ID } = req.query;
+    const { operation } = req.params;
+    const user = req.user?.user;
+    const { comment = '' } = req.body || {};
 
     if (!ID || !operation || !user) {
         return res.status(400).json({
@@ -151,49 +151,23 @@ export const likeComment = async (req, res) => {
     }
 
     try {
-        // LIKE operation
+        let updatedPost;
+
         if (operation === 'like') {
-            const updatedPost = await postData.findByIdAndUpdate(
+            updatedPost = await postData.findByIdAndUpdate(
                 ID,
-                { 
-                    $addToSet: { likesCount: user._id } 
-                },
+                { $addToSet: { likesCount: user._id } },
                 { new: true }
             );
-
-            if (!updatedPost) {
-                return res.status(404).json({ message: "Post not found" });
-            }
-
-            return res.status(200).json({
-                message: "Post liked successfully",
-                post: updatedPost
-            });
-        }
-        // UNLIKE operation
-        else if (operation === 'unlike') {
-            const updatedPost = await postData.findByIdAndUpdate(
+        } else if (operation === 'unlike') {
+            updatedPost = await postData.findByIdAndUpdate(
                 ID,
-                { 
-                    $pull: { likesCount: user._id }  // Remove user from likes array
-                },
+                { $pull: { likesCount: user._id } },
                 { new: true }
             );
-
-            if (!updatedPost) {
-                return res.status(404).json({ message: "Post not found" });
-            }
-
-            return res.status(200).json({
-                message: "Post unliked successfully",
-                post: updatedPost
-            });
-        }
-        else if (operation === 'comment') {
-            if (!comment || typeof comment !== 'string' || comment.trim() === '') {
-                return res.status(400).json({
-                    message: "Comment text is required and must be a non-empty string"
-                });
+        } else if (operation === 'comment') {
+            if (typeof comment !== 'string' || comment.trim() === '') {
+                return res.status(400).json({ message: "Comment must be a non-empty string" });
             }
 
             const newComment = {
@@ -202,11 +176,9 @@ export const likeComment = async (req, res) => {
                 createdAt: new Date()
             };
 
-            const updatedPost = await postData.findByIdAndUpdate(
+            updatedPost = await postData.findByIdAndUpdate(
                 ID,
-                { 
-                    $push: { comments: newComment } 
-                },
+                { $push: { comments: newComment } },
                 { new: true }
             );
 
@@ -219,12 +191,19 @@ export const likeComment = async (req, res) => {
                 comment: newComment,
                 post: updatedPost
             });
+        } else {
+            return res.status(400).json({ message: "Invalid operation. Use 'like', 'unlike', or 'comment'" });
         }
-        else {
-            return res.status(400).json({
-                message: "Invalid operation. Use 'like', 'unlike', or 'comment'"
-            });
+
+        if (!updatedPost) {
+            return res.status(404).json({ message: "Post not found" });
         }
+
+        return res.status(200).json({
+            message: `Post ${operation}d successfully`,
+            post: updatedPost
+        });
+
     } catch (error) {
         console.error("Error processing request:", error);
         return res.status(500).json({
