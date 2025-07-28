@@ -140,10 +140,11 @@ export const homepagePosts = async (req, res) => {
 
 export const likeComment = async (req, res) => {
     const { ID } = req.query;         // Post ID from query parameters
-    const { operation } = req.params;  // 'like' or 'unlike' from route path
-    const { user } = req.user;
-    const {comment} = req.body;
+    const { operation } = req.params;  // 'like', 'unlike', or 'comment' from route path
+    const { user } = req.user;         // Authenticated user from middleware
+    const { comment } = req.body;      // Comment text from request body
 
+    // Validate required fields based on operation
     if (!ID || !operation || !user) {
         return res.status(400).json({
             message: "Missing required parameters: ID, operation, or user"
@@ -151,14 +152,14 @@ export const likeComment = async (req, res) => {
     }
 
     try {
-        
+        // LIKE operation
         if (operation === 'like') {
             const updatedPost = await postData.findByIdAndUpdate(
                 ID,
                 { 
-                    $addToSet: { likesCount: user._id }
+                    $addToSet: { likesCount: user._id }  // Add user to likes array (no duplicates)
                 },
-                { new: true } 
+                { new: true }  // Return updated document
             );
 
             if (!updatedPost) {
@@ -170,13 +171,14 @@ export const likeComment = async (req, res) => {
                 post: updatedPost
             });
         }
+        // UNLIKE operation
         else if (operation === 'unlike') {
             const updatedPost = await postData.findByIdAndUpdate(
                 ID,
                 { 
-                    $pull: { likesCount: user._id } 
+                    $pull: { likesCount: user._id }  // Remove user from likes array
                 },
-                { new: true }  
+                { new: true }
             );
 
             if (!updatedPost) {
@@ -188,13 +190,44 @@ export const likeComment = async (req, res) => {
                 post: updatedPost
             });
         }
+        else if (operation === 'comment') {
+            if (!comment || typeof comment !== 'string' || comment.trim() === '') {
+                return res.status(400).json({
+                    message: "Comment text is required and must be a non-empty string"
+                });
+            }
+
+            const newComment = {
+                text: comment.trim(),
+                user: user._id,
+                createdAt: new Date()
+            };
+
+            const updatedPost = await postData.findByIdAndUpdate(
+                ID,
+                { 
+                    $push: { comments: newComment } 
+                },
+                { new: true }
+            );
+
+            if (!updatedPost) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+
+            return res.status(201).json({
+                message: "Comment added successfully",
+                comment: newComment,
+                post: updatedPost
+            });
+        }
         else {
             return res.status(400).json({
-                message: "Invalid operation. Use 'like' or 'unlike'"
+                message: "Invalid operation. Use 'like', 'unlike', or 'comment'"
             });
         }
     } catch (error) {
-        console.error("Error updating like status:", error);
+        console.error("Error processing request:", error);
         return res.status(500).json({
             message: "Server error",
             error: error.message
