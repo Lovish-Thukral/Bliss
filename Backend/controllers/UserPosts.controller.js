@@ -141,7 +141,7 @@ export const homepagePosts = async (req, res) => {
 export const likeComment = async (req, res) => {
     const { ID } = req.query;
     const { operation } = req.params;
-    const user = req.user?.user;
+    const user = req.user;
     const { comment = '' } = req.body || {};
 
     if (!ID || !operation || !user) {
