@@ -50,7 +50,7 @@ export default function ChatScreen() {
       console.error('Error sending message:', error)
     }
   }
-
+ 
   useEffect(() => {
     load()
   }, [])

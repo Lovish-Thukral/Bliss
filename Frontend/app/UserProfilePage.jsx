@@ -122,7 +122,7 @@ const UserProfilePage = () => {
             <TouchableOpacity onPress={() => { router.push('/settings'); showsideMenu(false); }}>
               <Text className="text-base text-gray-700 mb-4">Settings</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => { router.push('/help'); showsideMenu(false); }} >
+            <TouchableOpacity onPress={() => { router.push('/help&support'); showsideMenu(false); }} >
               <Text className="text-base text-gray-700 mb-4">Help & Support</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { ShowLogPopup(true); showsideMenu(false); }}>
