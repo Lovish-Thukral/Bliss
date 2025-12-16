@@ -1,16 +1,15 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
-	const dbUri = "mongodb+srv://lovish:0s9PiJrnAxOCR0OV@bliss2end.1astx6q.mongodb.net/";
-    console.log(dbUri)
-    try{
-        const isconnected = await mongoose.connect(dbUri);
+  const dbUri =
+    "mongodb+srv://lovish:YTjFZb9hqnxTwmsS@bliss2end.1astx6q.mongodb.net/blissdb?retryWrites=true&w=majority";
 
-        isconnected ? console.log("Database connected successfully") : console.log("Database connection failed");
-    }
-    catch(err){
-        console.error("Database connection error:", err);
-    }
-}
+  try {
+    await mongoose.connect(dbUri);
+    console.log("Database connected successfully");
+  } catch (err) {
+    console.error("Database connection error:", err.message);
+  }
+};
 
 export default connectDB;
