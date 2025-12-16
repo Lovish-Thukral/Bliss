@@ -58,7 +58,7 @@ server.use('/api/user', userRouter);
 server.use('/api/post', postRouter);
 server.use('/api/chat', Chatrouter);
 
-app.listen(process.env.PORT || 8000, () => {
+app.listen(process.env.PORT || 5311, () => {
   console.log(`Server is running http://localhost:${process.env.PORT}`);
   connectDB();
   connectMedia();
