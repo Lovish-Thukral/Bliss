@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   const dbUri =
-    "mongodb+srv://lovish:YTjFZb9hqnxTwmsS@bliss2end.1astx6q.mongodb.net/test?retryWrites=true&w=majority";
+    "mongodb+srv://lovish:Lovish24@bliss2end.1astx6q.mongodb.net/";
 
   try {
     await mongoose.connect(dbUri);
